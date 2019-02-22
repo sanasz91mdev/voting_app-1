@@ -147,11 +147,14 @@ class _MainPageState extends State<MainPage> {
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Card(
-                  child: SizedBox(
-                height: 200,
-                child: pieChart,
-              )),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                    child: SizedBox(
+                  height: 200,
+                  child: pieChart,
+                )),
+              ),
               _buildBody(context),
             ],
           ),
