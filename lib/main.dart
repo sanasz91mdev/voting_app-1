@@ -6,11 +6,19 @@ import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
+  Color _primaryColor = Color(0xFF5AC4E5);
+  Color _secondaryColor = Color(0xFF030A27);
+  Color _accentColor = Colors.white;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Voting App',
-      theme: ThemeData(primarySwatch: Colors.purple),
+      theme: ThemeData(
+        backgroundColor: _secondaryColor,
+        primaryColor: _primaryColor,
+        accentColor: _accentColor,
+        buttonColor: _primaryColor,
+      ),
       home: MainPage(
         title: 'ELECTIONS 2019',
       ),
@@ -73,11 +81,11 @@ class _MainPageState extends State<MainPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Icon(Icons.star),
-                    Icon(Icons.star_border),
-                    Icon(Icons.star),
-                    Icon(Icons.star_border),
-                    Icon(Icons.star),
+                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
+                    Icon(Icons.star, color: Theme.of(context).accentColor),
+                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
+                    Icon(Icons.star, color: Theme.of(context).accentColor),
+                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
                   ],
                 ),
               ),
@@ -90,11 +98,12 @@ class _MainPageState extends State<MainPage> {
               ),
               Text(
                 'SATURDAY, MARCH 16TH',
+                style: TextStyle(color: Theme.of(context).backgroundColor),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
-                  '23 Days Away',
+                  '${DateTime(2019, 03, 16).difference(DateTime.now()).inDays} Days Away',
                   style: TextStyle(
                     color: Colors.white,
                   ),
@@ -103,12 +112,12 @@ class _MainPageState extends State<MainPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: PageIndicator(
-                        layout: PageIndicatorLayout.WARM,
-                        size: 8.0,
-                        controller: controller,
-                        space: 4.0,
-                        count: 2,
-                      ),
+                  layout: PageIndicatorLayout.WARM,
+                  size: 8.0,
+                  controller: controller,
+                  space: 4.0,
+                  count: 2,
+                ),
               ),
             ],
           ),
@@ -125,7 +134,7 @@ class _MainPageState extends State<MainPage> {
           //                //
           // // // // // // //
           Container(
-            color: Colors.pink,
+            color: Theme.of(context).backgroundColor,
           ),
 
           //End of first page
