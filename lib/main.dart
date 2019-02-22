@@ -54,7 +54,21 @@ class _MainPageState extends State<MainPage> {
       Track("Sat", 350),
       Track("Sun", 150),
     ];
-
+    final provincial_data = [
+      Provincial('Sindh', 75, 'PPP'),
+      Provincial('Punjab', 100, 'PMLN'),
+      Provincial('Balochistan', 55, 'TLP'),
+      Provincial('KPK', 25, 'PTI'),
+    ];
+    final provincial_series = [
+      charts.Series<Provincial, String>(
+          id: 'provincialChart',
+          colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+          domainFn: (Provincial winner, _) => winner.province,
+          measureFn: (Provincial winner, _) => winner.votes,
+          data: provincial_data,
+          labelAccessorFn: (Provincial winner, _) => winner.party,),
+    ];
     var series = [
       charts.Series(
           domainFn: (Track track, _) => track.day,
@@ -65,11 +79,21 @@ class _MainPageState extends State<MainPage> {
 
     var pi = (22 / 7);
 
-    var pieChart = charts.PieChart(series,
-        animate: true,
-        defaultRenderer: new charts.ArcRendererConfig(
-            arcWidth: 30,
-            arcRendererDecorators: [new charts.ArcLabelDecorator()]));
+    var barChart = charts.BarChart(
+      provincial_series,
+      animate: true,
+      vertical: false,
+      barRendererDecorator: charts.BarLabelDecorator<String>(),
+    );
+
+    var pieChart = charts.PieChart(
+      series,
+      animate: true,
+      defaultRenderer: charts.ArcRendererConfig(
+        arcWidth: 30,
+        arcRendererDecorators: [charts.ArcLabelDecorator()],
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
@@ -144,18 +168,47 @@ class _MainPageState extends State<MainPage> {
           //                //
           //                //
           // // // // // // //
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          ListView(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                child: Text(
+                  'NATIONAL ASSEMBLY',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Theme.of(context).backgroundColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Card(
                     child: SizedBox(
                   height: 200,
                   child: pieChart,
                 )),
               ),
-              _buildBody(context),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                child: Text(
+                  'PROVINCIAL ASSEMBLY',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Theme.of(context).backgroundColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Card(
+                    child: SizedBox( 
+                  height: 200, 
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: barChart,
+                  ),
+                )),
+              ),
             ],
           ),
         ],
@@ -210,6 +263,14 @@ class Track {
   final int steps;
 
   Track(this.day, this.steps);
+}
+
+class Provincial {
+  final String province;
+  final int votes;
+  final String party;
+
+  Provincial(this.province, this.votes, this.party);
 }
 
 class Record {
