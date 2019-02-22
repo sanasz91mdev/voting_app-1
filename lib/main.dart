@@ -26,7 +26,11 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  var data = [
+  
+  @override
+  Widget build(BuildContext context) {
+
+    var data = [
     Track("Mon", 250),
     Track("Tue", 1250),
     Track("Wed", 450),
@@ -51,8 +55,6 @@ class _MainPageState extends State<MainPage> {
       defaultRenderer: new charts.ArcRendererConfig(
           arcWidth: 30,
           arcRendererDecorators: [new charts.ArcLabelDecorator()]));
-  @override
-  Widget build(BuildContext context) {
     return PageView(
       children: <Widget>[
         Scaffold(
@@ -141,7 +143,8 @@ class _MainPageState extends State<MainPage> {
       ],
     );
   }
-    Widget _buildBody(BuildContext context) {
+
+  Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('users').snapshots(),
       builder: (context, snapshot) {
@@ -151,11 +154,13 @@ class _MainPageState extends State<MainPage> {
       },
     );
   }
+
   Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
     return Expanded(
       child: ListView(
         padding: const EdgeInsets.only(top: 20.0),
-        children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+        children:
+            snapshot.map((data) => _buildListItem(context, data)).toList(),
       ),
     );
   }
@@ -166,8 +171,7 @@ class _MainPageState extends State<MainPage> {
     return Padding(
       key: ValueKey(record.name),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child:
-      Container(
+      child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.purple),
           borderRadius: BorderRadius.circular(5.0),
@@ -180,15 +184,13 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
 }
 
-class Track
-{
+class Track {
   final String day;
   final int steps;
 
-  Track(this.day,this.steps);
+  Track(this.day, this.steps);
 }
 
 class Record {
