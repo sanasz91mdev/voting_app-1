@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 
 void main() => runApp(VotingApp());
 
@@ -26,109 +27,115 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  
+  PageController controller;
+
+  @override
+  void initState() {
+    controller = new PageController(initialPage: 0);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     var data = [
-    Track("Mon", 250),
-    Track("Tue", 1250),
-    Track("Wed", 450),
-    Track("Thurs", 650),
-    Track("Fri", 750),
-    Track("Sat", 350),
-    Track("Sun", 150),
-  ];
+      Track("Mon", 250),
+      Track("Tue", 1250),
+      Track("Wed", 450),
+      Track("Thurs", 650),
+      Track("Fri", 750),
+      Track("Sat", 350),
+      Track("Sun", 150),
+    ];
 
-  var series = [
-    charts.Series(
-        domainFn: (Track track, _) => track.day,
-        measureFn: (Track track, _) => track.steps,
-        id: 'fitnessTrack',
-        data: data)
-  ];
+    var series = [
+      charts.Series(
+          domainFn: (Track track, _) => track.day,
+          measureFn: (Track track, _) => track.steps,
+          id: 'fitnessTrack',
+          data: data)
+    ];
 
-  var pi = (22 / 7);
+    var pi = (22 / 7);
 
-  var pieChart = charts.PieChart(series,
-      animate: true,
-      defaultRenderer: new charts.ArcRendererConfig(
-          arcWidth: 30,
-          arcRendererDecorators: [new charts.ArcLabelDecorator()]));
-    return PageView(
-      children: <Widget>[
-        Scaffold(
-          appBar: AppBar(
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(98.0),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.star),
-                        Icon(Icons.star_border),
-                        Icon(Icons.star),
-                        Icon(Icons.star_border),
-                        Icon(Icons.star),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24.0),
-                  ),
-                  Text(
-                    'SATURDAY, MARCH 16TH',
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                    child: Text(
-                      '23 Days Away',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.lens,
-                          size: 8.0,
-                        ),
-                        Icon(
-                          Icons.panorama_fish_eye,
-                          size: 8.0,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
+    var pieChart = charts.PieChart(series,
+        animate: true,
+        defaultRenderer: new charts.ArcRendererConfig(
+            arcWidth: 30,
+            arcRendererDecorators: [new charts.ArcLabelDecorator()]));
+    return Scaffold(
+      appBar: AppBar(
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(94.0),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.star),
+                    Icon(Icons.star_border),
+                    Icon(Icons.star),
+                    Icon(Icons.star_border),
+                    Icon(Icons.star),
+                  ],
+                ),
               ),
-            ),
+              Text(
+                widget.title,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24.0),
+              ),
+              Text(
+                'SATURDAY, MARCH 16TH',
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+                child: Text(
+                  '23 Days Away',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: PageIndicator(
+                        layout: PageIndicatorLayout.WARM,
+                        size: 8.0,
+                        controller: controller,
+                        space: 4.0,
+                        count: 2,
+                      ),
+              ),
+            ],
           ),
         ),
-
-        //End of first page
-        //                //
-        //                //
-        //                //
-        //                //
-        //                //
-        // // // // // // //
-        Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
+      ),
+      body: PageView(
+        controller: controller,
+        children: <Widget>[
+          //Start of first page
+          //                //
+          //                //
+          //                //
+          //                //
+          //                //
+          // // // // // // //
+          Container(
+            color: Colors.pink,
           ),
-          body: Column(
+
+          //End of first page
+          //                //
+          //                //
+          //                //
+          //                //
+          //                //
+          // // // // // // //
+          Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Card(
@@ -139,8 +146,8 @@ class _MainPageState extends State<MainPage> {
               _buildBody(context),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
