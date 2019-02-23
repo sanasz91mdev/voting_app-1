@@ -163,7 +163,7 @@ class _MainPageState extends State<MainPage> {
                   size: 8.0,
                   controller: controller,
                   space: 4.0,
-                  count: 2,
+                  count: 3,
                 ),
               ),
             ],
@@ -353,7 +353,9 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
                   child: FlatButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.jumpToPage(1);
+                    },
                     shape: Border.all(
                       color: Theme.of(context).accentColor,
                     ),
@@ -377,6 +379,207 @@ class _MainPageState extends State<MainPage> {
           //                //
           //                //
           // // // // // // //
+
+          Container(
+            child: ListView(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 8),
+                  child: Text(
+                    'PROVINCIAL ASSEMBLY',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.star, color: Theme.of(context).primaryColor),
+                    Icon(Icons.star, color: Colors.red),
+                    Icon(Icons.star, color: Theme.of(context).primaryColor),
+                    Icon(Icons.star, color: Colors.red),
+                    Icon(Icons.star, color: Theme.of(context).primaryColor),
+                  ],
+                ),
+                Padding(padding: const EdgeInsets.all(8.0)),
+                ListTile(
+                  leading: Radio(
+                    value: 0,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Pakistan Tahrek-e-Insaf',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'PTI',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: 1,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Tahrek-e-Labaik Pakistan',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'TLP',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: 2,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Pakistan Muslim League',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'PMLN',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: 3,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Pakistan People Party',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'PPP',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: 4,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Awami National Party',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'ANP',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  child: FlatButton(
+                    onPressed: () {
+                      controller.jumpToPage(2);
+                    },
+                    shape: Border.all(
+                      color: Theme.of(context).accentColor,
+                    ),
+                    child: Text(
+                      'SUBMIT',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            color: Theme.of(context).backgroundColor,
+          ),
+
+          //End of second page
+          //                //
+          //                //
+          //                //
+          //                //
+          //                //
+          // // // // // // //
+
           ListView(
             children: <Widget>[
               Padding(
