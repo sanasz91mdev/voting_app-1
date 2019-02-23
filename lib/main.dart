@@ -104,7 +104,7 @@ class _MainPageState extends State<MainPage> {
 
     var barChart = charts.BarChart(
       provincial_series,
-      animate: true,
+      animate: false,
       vertical: false,
       barRendererDecorator: charts.BarLabelDecorator<String>(),
     );
@@ -120,7 +120,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(94.0),
+          preferredSize: Size.fromHeight(92.0),
           child: Column(
             children: <Widget>[
               Padding(
@@ -350,6 +350,21 @@ class _MainPageState extends State<MainPage> {
                   color: Theme.of(context).accentColor,
                   indent: 16.0,
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  child: FlatButton(
+                    onPressed: () {},
+                    shape: Border.all(
+                      color: Theme.of(context).accentColor,
+                    ),
+                    child: Text(
+                      'SUBMIT',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
             color: Theme.of(context).backgroundColor,
@@ -378,12 +393,12 @@ class _MainPageState extends State<MainPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Card(
                     child: SizedBox(
-                  height: 200,
+                  height: 194,
                   child: pieChart,
                 )),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                padding: const EdgeInsets.only(top: 8.0, left: 16.0),
                 child: Text(
                   'PROVINCIAL ASSEMBLY',
                   textAlign: TextAlign.start,
@@ -393,10 +408,11 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding:
+                    const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
                 child: Card(
                     child: SizedBox(
-                  height: 200,
+                  height: 194,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: barChart,
