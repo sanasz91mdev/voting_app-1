@@ -6,9 +6,9 @@ import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
-  Color _primaryColor = Color(0xFF5AC4E5);
-  Color _secondaryColor = Color(0xFF030A27);
-  Color _accentColor = Colors.white;
+  final Color _primaryColor = Color(0xFF5AC4E5);
+  final Color _secondaryColor = Color(0xFF030A27);
+  final Color _accentColor = Colors.white;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,6 +40,9 @@ class _MainPageState extends State<MainPage> {
   //final List<String> _allActivities = <String>['PTI', 'PMLN', 'MQM', 'TLP', 'PSP', 'PPP', 'PAT', 'ANP', 'JUI', ];
   //String _activity = 'PTI';
   int _radioValue1 = -1;
+  bool naVoteCasted = false;
+  bool paVoteCasted = false;
+  bool votingComplete = false;
 
   void _handleRadioValueChange1(int value) {
     setState(() {
@@ -351,7 +354,8 @@ class _MainPageState extends State<MainPage> {
                   indent: 16.0,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: FlatButton(
                     onPressed: () {
                       controller.jumpToPage(1);
@@ -551,7 +555,8 @@ class _MainPageState extends State<MainPage> {
                   indent: 16.0,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: FlatButton(
                     onPressed: () {
                       controller.jumpToPage(2);
