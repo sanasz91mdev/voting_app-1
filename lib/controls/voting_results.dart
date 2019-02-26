@@ -112,7 +112,7 @@ class VotingResultState extends State<VotingResult> {
               child: SizedBox(
             height: 194,
             child: StreamBuilder<QuerySnapshot>(
-    stream: Firestore.instance.collection('polls').snapshots(),
+              stream: Firestore.instance.collection('polls').snapshots(),
               builder: (context, snapshot) {
                 nationalAssemblyResultList=new List<NationalAssemblyPollsResult>();
                 if (!snapshot.hasData) return LinearProgressIndicator(backgroundColor: Colors.orange,);
