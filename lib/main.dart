@@ -39,7 +39,7 @@ class _MainPageState extends State<MainPage> {
   PageController controller;
   //final List<String> _allActivities = <String>['PTI', 'PMLN', 'MQM', 'TLP', 'PSP', 'PPP', 'PAT', 'ANP', 'JUI', ];
   //String _activity = 'PTI';
-  int _radioValue1 = -1;
+  int _naRadioGroupValue = -1;
   bool naVoteCasted = false;
   bool paVoteCasted = false;
   bool votingComplete = false;
@@ -47,15 +47,15 @@ class _MainPageState extends State<MainPage> {
   void _handleRadioValueChange1(int value) {
     if (!naVoteCasted) {
       setState(() {
-        _radioValue1 = value;
+        _naRadioGroupValue = value;
       });
     }
   }
 
-    void _handleRadioValueChange2(int value) {
+  void _handleRadioValueChange2(int value) {
     if (!paVoteCasted) {
       setState(() {
-        _radioValue1 = value;
+        _naRadioGroupValue = value;
       });
     }
   }
@@ -119,7 +119,7 @@ class _MainPageState extends State<MainPage> {
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(92.0),
           child: Column(
-            children: <Widget>[
+            children: [
               Text(
                 widget.title,
                 style: TextStyle(
@@ -156,7 +156,7 @@ class _MainPageState extends State<MainPage> {
       ),
       body: PageView(
         controller: controller,
-        children: <Widget>[
+        children: [
           //Start of first page
           //                //
           //                //
@@ -164,9 +164,32 @@ class _MainPageState extends State<MainPage> {
           //                //
           //                //
           // // // // // // //
+
+
+          //Not working
+          Container(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('polls').snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) return LinearProgressIndicator();
+
+                DocumentSnapshot first = snapshot.data.documents.first;
+                var pollArray = first['pollOptions'];
+
+                return ListView(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  children: pollArray
+                      .map((data) => _buildListItem(context, data, 0))
+                      .toList(),
+                );
+              },
+            ),
+          ),
+
+
           Container(
             child: ListView(
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 8),
                   child: Text(
@@ -180,7 +203,7 @@ class _MainPageState extends State<MainPage> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     Icon(Icons.star, color: Theme.of(context).primaryColor),
                     Icon(Icons.star, color: Colors.red),
                     Icon(Icons.star, color: Theme.of(context).primaryColor),
@@ -189,40 +212,20 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
                 Padding(padding: const EdgeInsets.all(8.0)),
-                ListTile(
-                  leading: Radio(
-                    value: 0,
-                    activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
-                  ),
-                  title: Text(
-                    'Pakistan Tahrek-e-Insaf',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'PTI',
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                Divider(
-                  color: Theme.of(context).accentColor,
-                  indent: 16.0,
+                new RadioListItem(
+                  flag:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Flag_of_the_Pakistan_Tehreek-e-Insaf.svg/324px-Flag_of_the_Pakistan_Tehreek-e-Insaf.svg.png',
+                  radioValue1: _naRadioGroupValue,
+                  fullName: 'Flutter Tehreek-e-Insaaf',
+                  index: 0,
+                  initials: 'FTI',
+                  onChanged: _handleRadioValueChange1,
                 ),
                 ListTile(
                   leading: Radio(
                     value: 1,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange1,
                   ),
                   title: Text(
@@ -251,7 +254,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 2,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange1,
                   ),
                   title: Text(
@@ -280,7 +283,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 3,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange1,
                   ),
                   title: Text(
@@ -309,7 +312,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 4,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange1,
                   ),
                   title: Text(
@@ -341,7 +344,7 @@ class _MainPageState extends State<MainPage> {
                     onPressed: naVoteCasted
                         ? null
                         : () {
-                            if (_radioValue1 == -1) {
+                            if (_naRadioGroupValue == -1) {
                               showAlertDialog(context, 'Unable to proceed',
                                   'Please select a party to vote.');
                             } else {
@@ -352,13 +355,17 @@ class _MainPageState extends State<MainPage> {
                             }
                           },
                     shape: Border.all(
-                      color: naVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
+                      color: naVoteCasted
+                          ? Theme.of(context).disabledColor
+                          : Theme.of(context).accentColor,
                     ),
                     color: Theme.of(context).backgroundColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
-                        color: naVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
+                        color: naVoteCasted
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -378,7 +385,7 @@ class _MainPageState extends State<MainPage> {
 
           Container(
             child: ListView(
-              children: <Widget>[
+              children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 8),
                   child: Text(
@@ -392,7 +399,7 @@ class _MainPageState extends State<MainPage> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     Icon(Icons.star, color: Theme.of(context).primaryColor),
                     Icon(Icons.star, color: Colors.red),
                     Icon(Icons.star, color: Theme.of(context).primaryColor),
@@ -405,7 +412,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 0,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
@@ -434,7 +441,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 1,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
@@ -463,7 +470,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 2,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
@@ -492,7 +499,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 3,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
@@ -521,7 +528,7 @@ class _MainPageState extends State<MainPage> {
                   leading: Radio(
                     value: 4,
                     activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
+                    groupValue: _naRadioGroupValue,
                     onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
@@ -553,7 +560,7 @@ class _MainPageState extends State<MainPage> {
                     onPressed: paVoteCasted
                         ? null
                         : () {
-                            if (_radioValue1 == -1) {
+                            if (_naRadioGroupValue == -1) {
                               showAlertDialog(context, 'Unable to proceed',
                                   'Please select a party to vote.');
                             } else {
@@ -564,13 +571,17 @@ class _MainPageState extends State<MainPage> {
                             }
                           },
                     shape: Border.all(
-                      color: paVoteCasted ? Theme.of(context).disabledColor : Theme.of(context).accentColor,
+                      color: paVoteCasted
+                          ? Theme.of(context).disabledColor
+                          : Theme.of(context).accentColor,
                     ),
                     color: Theme.of(context).backgroundColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
-                        color: paVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
+                        color: paVoteCasted
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -589,7 +600,7 @@ class _MainPageState extends State<MainPage> {
           // // // // // // //
 
           ListView(
-            children: <Widget>[
+            children: [
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, left: 16.0),
                 child: Text(
@@ -637,11 +648,11 @@ class _MainPageState extends State<MainPage> {
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
-          children: <Widget>[
+          children: [
             DrawerHeader(
               child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
+                  children: [
                     CircleAvatarWithShadow(),
                   ]),
               decoration: BoxDecoration(
@@ -654,7 +665,7 @@ class _MainPageState extends State<MainPage> {
             ),
             ListTile(
               title: Row(
-                children: <Widget>[
+                children: [
                   Icon(Icons.assessment,
                       color: Theme.of(context).backgroundColor),
                   Padding(
@@ -673,7 +684,7 @@ class _MainPageState extends State<MainPage> {
             ),
             ListTile(
               title: Row(
-                children: <Widget>[
+                children: [
                   Icon(Icons.settings,
                       color: Theme.of(context).backgroundColor),
                   Padding(
@@ -686,7 +697,7 @@ class _MainPageState extends State<MainPage> {
             ),
             ListTile(
               title: Row(
-                children: <Widget>[
+                children: [
                   Icon(Icons.help_outline,
                       color: Theme.of(context).backgroundColor),
                   Padding(
@@ -699,7 +710,7 @@ class _MainPageState extends State<MainPage> {
             ),
             ListTile(
               title: Row(
-                children: <Widget>[
+                children: [
                   Icon(Icons.info, color: Theme.of(context).backgroundColor),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
@@ -739,7 +750,7 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          actions: <Widget>[
+          actions: [
             FlatButton(
               child: Text(
                 'Ok',
@@ -757,44 +768,17 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('users').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
+  Widget _buildListItem(
+      BuildContext context, Map data, int index) {
+    final record = FirebaseNaResponse.fromMap(data);
 
-        return _buildList(context, snapshot.data.documents);
-      },
-    );
-  }
-
-  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return Expanded(
-      child: ListView(
-        padding: const EdgeInsets.only(top: 20.0),
-        children:
-            snapshot.map((data) => _buildListItem(context, data)).toList(),
-      ),
-    );
-  }
-
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final record = Record.fromSnapshot(data);
-
-    return Padding(
-      key: ValueKey(record.name),
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.purple),
-          borderRadius: BorderRadius.circular(5.0),
-        ),
-        child: ListTile(
-          title: Text(record.name),
-          trailing: Text(record.age.toString()),
-          onTap: () => print(record),
-        ),
-      ),
+    return RadioListItem(
+      flag: record.flag,
+      fullName: record.fullName,
+      index: index,
+      initials: record.initials,
+      radioValue1: _naRadioGroupValue,
+      onChanged: _handleRadioValueChange1,
     );
   }
 }
@@ -812,6 +796,29 @@ class Provincial {
   final String party;
 
   Provincial(this.province, this.votes, this.party);
+}
+
+class FirebaseNaResponse {
+  final String color;
+  final String flag;
+  final String fullName;
+  final String initials;
+  final int numberOfVoters;
+  final DocumentReference reference;
+
+  FirebaseNaResponse.fromMap(Map<dynamic, dynamic> map, {this.reference})
+      : assert(map['color'] != null),
+        assert(map['flag'] != null),
+        assert(map['fullName'] != null),
+        assert(map['initials'] != null),
+        color = map['color'],
+        flag = map['flag'],
+        fullName = map['initials'],
+        initials = map['initials'],
+        numberOfVoters = map['numberOfVoters'];
+
+  FirebaseNaResponse.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
 }
 
 class Record {
@@ -859,3 +866,62 @@ class CircleAvatarWithShadow extends StatelessWidget {
     );
   }
 }
+
+class RadioListItem extends StatelessWidget {
+  const RadioListItem({
+    Key key,
+    @required int radioValue1,
+    @required int index,
+    @required this.onChanged,
+    @required this.fullName,
+    @required this.initials,
+    @required this.flag,
+  })  : _radioValue1 = radioValue1,
+        _index = index,
+        super(key: key);
+
+  final int _radioValue1;
+  final int _index;
+  final String fullName;
+  final String initials;
+  final String flag;
+  final RadioCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Radio(
+            value: _index,
+            activeColor: Theme.of(context).accentColor,
+            groupValue: _radioValue1,
+            onChanged: onChanged,
+          ),
+          title: Text(
+            fullName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).accentColor,
+            ),
+          ),
+          subtitle: Text(
+            initials,
+            style: TextStyle(
+              color: Theme.of(context).accentColor,
+            ),
+          ),
+          trailing: CircleAvatar(
+            backgroundImage: NetworkImage(flag),
+          ),
+        ),
+        Divider(
+          color: Theme.of(context).accentColor,
+          indent: 16.0,
+        ),
+      ],
+    );
+  }
+}
+
+typedef RadioCallback = void Function(int value);
