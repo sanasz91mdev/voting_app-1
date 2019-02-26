@@ -52,6 +52,14 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+    void _handleRadioValueChange2(int value) {
+    if (!paVoteCasted) {
+      setState(() {
+        _radioValue1 = value;
+      });
+    }
+  }
+
   @override
   void initState() {
     controller = new PageController(initialPage: 0);
@@ -344,13 +352,13 @@ class _MainPageState extends State<MainPage> {
                             }
                           },
                     shape: Border.all(
-                      color: Theme.of(context).accentColor,
+                      color: naVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
                     ),
                     color: Theme.of(context).backgroundColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
-                        color: Theme.of(context).accentColor,
+                        color: naVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
                       ),
                     ),
                   ),
@@ -398,7 +406,7 @@ class _MainPageState extends State<MainPage> {
                     value: 0,
                     activeColor: Theme.of(context).accentColor,
                     groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
+                    onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
                     'Pakistan Tahrek-e-Insaf',
@@ -427,7 +435,7 @@ class _MainPageState extends State<MainPage> {
                     value: 1,
                     activeColor: Theme.of(context).accentColor,
                     groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
+                    onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
                     'Tahrek-e-Labaik Pakistan',
@@ -456,7 +464,7 @@ class _MainPageState extends State<MainPage> {
                     value: 2,
                     activeColor: Theme.of(context).accentColor,
                     groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
+                    onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
                     'Pakistan Muslim League',
@@ -485,7 +493,7 @@ class _MainPageState extends State<MainPage> {
                     value: 3,
                     activeColor: Theme.of(context).accentColor,
                     groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
+                    onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
                     'Pakistan People Party',
@@ -514,7 +522,7 @@ class _MainPageState extends State<MainPage> {
                     value: 4,
                     activeColor: Theme.of(context).accentColor,
                     groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
+                    onChanged: _handleRadioValueChange2,
                   ),
                   title: Text(
                     'Awami National Party',
@@ -541,17 +549,28 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 16.0, right: 16.0, bottom: 16.0, top: 8),
-                  child: FlatButton(
-                    onPressed: () {
-                      controller.jumpToPage(2);
-                    },
+                  child: RaisedButton(
+                    onPressed: paVoteCasted
+                        ? null
+                        : () {
+                            if (_radioValue1 == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                paVoteCasted = true;
+                              });
+                              controller.jumpToPage(2);
+                            }
+                          },
                     shape: Border.all(
-                      color: Theme.of(context).accentColor,
+                      color: paVoteCasted ? Theme.of(context).disabledColor : Theme.of(context).accentColor,
                     ),
+                    color: Theme.of(context).backgroundColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
-                        color: Theme.of(context).accentColor,
+                        color: paVoteCasted ? Theme.of(context).disabledColor :Theme.of(context).accentColor,
                       ),
                     ),
                   ),
