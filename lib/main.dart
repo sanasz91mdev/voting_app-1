@@ -6,8 +6,8 @@ import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
-  final Color _primaryColor = Color(0xFF5AC4E5);
-  final Color _secondaryColor = Color(0xFF030A27);
+  final Color _primaryColor = Color(0xFF00c853);
+  final Color _secondaryColor = Color(0xFF1b5e20);
   final Color _accentColor = Colors.white;
   @override
   Widget build(BuildContext context) {
@@ -45,26 +45,11 @@ class _MainPageState extends State<MainPage> {
   bool votingComplete = false;
 
   void _handleRadioValueChange1(int value) {
-    setState(() {
-      _radioValue1 = value;
-
-      switch (_radioValue1) {
-        case 0:
-          //Fluttertoast.showToast(msg: 'Correct !',toastLength: Toast.LENGTH_SHORT);
-          break;
-        case 1:
-          //Fluttertoast.showToast(msg: 'Try again !',toastLength: Toast.LENGTH_SHORT);
-          break;
-        case 2:
-          //Fluttertoast.showToast(msg: 'Try again !',toastLength: Toast.LENGTH_SHORT);
-          break;
-        case 3:
-          //Fluttertoast.showToast(msg: 'Try again !',toastLength: Toast.LENGTH_SHORT);
-          break;
-        case 4:
-          break;
-      }
-    });
+    if (!naVoteCasted) {
+      setState(() {
+        _radioValue1 = value;
+      });
+    }
   }
 
   @override
@@ -90,7 +75,7 @@ class _MainPageState extends State<MainPage> {
     final provincial_series = [
       charts.Series<Provincial, String>(
         id: 'provincialChart',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
         domainFn: (Provincial winner, _) => winner.province,
         measureFn: (Provincial winner, _) => winner.votes,
         data: provincial_data,
@@ -100,6 +85,7 @@ class _MainPageState extends State<MainPage> {
     var series = [
       charts.Series(
           domainFn: (Track track, _) => track.day,
+          colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
           measureFn: (Track track, _) => track.steps,
           id: 'nationalChart',
           data: data)
@@ -126,19 +112,6 @@ class _MainPageState extends State<MainPage> {
           preferredSize: Size.fromHeight(92.0),
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
-                    Icon(Icons.star, color: Theme.of(context).accentColor),
-                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
-                    Icon(Icons.star, color: Theme.of(context).accentColor),
-                    Icon(Icons.star, color: Theme.of(context).backgroundColor),
-                  ],
-                ),
-              ),
               Text(
                 widget.title,
                 style: TextStyle(
@@ -153,7 +126,7 @@ class _MainPageState extends State<MainPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
-                  '${DateTime(2019, 03, 16).difference(DateTime.now()).inDays} Days Away',
+                  '${DateTime(2019, 03, 16).difference(DateTime.now()).inHours} Hours Away',
                   style: TextStyle(
                     color: Colors.white,
                   ),
@@ -356,13 +329,24 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 16.0, right: 16.0, bottom: 16.0, top: 8),
-                  child: FlatButton(
-                    onPressed: () {
-                      controller.jumpToPage(1);
-                    },
+                  child: RaisedButton(
+                    onPressed: naVoteCasted
+                        ? null
+                        : () {
+                            if (_radioValue1 == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                naVoteCasted = true;
+                              });
+                              controller.jumpToPage(1);
+                            }
+                          },
                     shape: Border.all(
                       color: Theme.of(context).accentColor,
                     ),
+                    color: Theme.of(context).backgroundColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
@@ -633,42 +617,20 @@ class _MainPageState extends State<MainPage> {
       ),
       drawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Elections 2019",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 20.0,
-                        color: Colors.white),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 48.0),
-                    child: Text(
-                      "Sana Zehra",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18.0,
-                          color: Colors.white),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Text(
-                    "Karachi, NA - 252",
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18.0,
-                        color: Colors.white),
-                  )
-                ],
-              ),
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircleAvatarWithShadow(),
+                  ]),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                image: DecorationImage(
+                  image: NetworkImage(
+                      'https://www.federalretirees.ca/~/media/Images/Advocacy/ElectionBallot_553558978.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             ListTile(
@@ -682,7 +644,10 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-              onTap: null,
+              onTap: () {
+                Navigator.pop(context);
+                controller.jumpToPage(2);
+              },
             ),
             Divider(
               color: Colors.grey,
@@ -728,6 +693,48 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void showAlertDialog(BuildContext context, String title, String message) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: Border.all(
+            color: Theme.of(context).accentColor,
+          ),
+          backgroundColor: Theme.of(context).backgroundColor,
+          title: Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).accentColor,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Ok',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -804,4 +811,32 @@ class Record {
 
   @override
   String toString() => "Record<$name:$age>";
+}
+
+class CircleAvatarWithShadow extends StatelessWidget {
+  const CircleAvatarWithShadow({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 16.0),
+      child: CircleAvatar(
+        foregroundColor: Theme.of(context).accentColor,
+        backgroundColor: Theme.of(context).accentColor,
+        radius: 32.0,
+        child: Container(),
+      ),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black,
+            blurRadius: 10.0,
+          ),
+        ],
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 }
