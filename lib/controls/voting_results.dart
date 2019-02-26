@@ -114,8 +114,12 @@ class VotingResultState extends State<VotingResult> {
             child: StreamBuilder<QuerySnapshot>(
               stream: Firestore.instance.collection('polls').snapshots(),
               builder: (context, snapshot) {
-                nationalAssemblyResultList=new List<NationalAssemblyPollsResult>();
-                if (!snapshot.hasData) return LinearProgressIndicator(backgroundColor: Colors.orange,);
+                nationalAssemblyResultList =
+                    new List<NationalAssemblyPollsResult>();
+                if (!snapshot.hasData)
+                  return LinearProgressIndicator(
+                    backgroundColor: Colors.orange,
+                  );
                 DocumentSnapshot first = snapshot.data.documents.first;
                 var pollResults = first['pollOptions'];
 

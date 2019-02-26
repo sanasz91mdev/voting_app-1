@@ -22,7 +22,7 @@ class VotingApp extends StatelessWidget {
         accentColor: _accentColor,
         buttonColor: _primaryColor,
         unselectedWidgetColor: _accentColor,
-          dialogBackgroundColor:_secondaryColor,
+        dialogBackgroundColor: _secondaryColor,
       ),
       home: MainPage(
         title: 'ELECTIONS 2019',
@@ -73,7 +73,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: getAppBar(),
       body: PageView(
@@ -87,11 +86,12 @@ class _MainPageState extends State<MainPage> {
           //                //
           // // // // // // //
 
-
           //Now working :D
           Column(
             children: <Widget>[
-              PollHeader(headerName: "NATIONAL ASSEMBLY",),
+              PollHeader(
+                headerName: "NATIONAL ASSEMBLY",
+              ),
               Expanded(
                 //flex: 5,
                 child: Container(
@@ -102,38 +102,42 @@ class _MainPageState extends State<MainPage> {
 
                       DocumentSnapshot first = snapshot.data.documents.first;
                       var pollArray = first['pollOptions'];
-                      int i =0;
+                      int i = 0;
 
                       return ListView(
                         padding: const EdgeInsets.only(top: 20.0),
                         children: pollArray
-                            .map<Widget>((data) => _buildListItem(context, data, i++,_naRadioGroupValue,_handleRadioValueChange1))
+                            .map<Widget>((data) => _buildListItem(
+                                context,
+                                data,
+                                i++,
+                                _naRadioGroupValue,
+                                _handleRadioValueChange1))
                             .toList(),
                       );
                     },
                   ),
                   color: Theme.of(context).backgroundColor,
-
                 ),
               ),
               Container(
-                child:                 Padding(
+                child: Padding(
                   padding: const EdgeInsets.only(
                       left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: RaisedButton(
                     onPressed: naVoteCasted
                         ? null
                         : () {
-                      if (_naRadioGroupValue == -1) {
-                        showAlertDialog(context, 'Unable to proceed',
-                            'Please select a party to vote.');
-                      } else {
-                        setState(() {
-                          naVoteCasted = true;
-                        });
-                        controller.jumpToPage(1);
-                      }
-                    },
+                            if (_naRadioGroupValue == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                naVoteCasted = true;
+                              });
+                              controller.jumpToPage(1);
+                            }
+                          },
                     shape: Border.all(
                       color: naVoteCasted
                           ? Theme.of(context).disabledColor
@@ -151,13 +155,9 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 color: Theme.of(context).backgroundColor,
-
               )
             ],
           ),
-
-
-
 
           //End of first page
           //                //
@@ -169,7 +169,9 @@ class _MainPageState extends State<MainPage> {
 
           Column(
             children: <Widget>[
-              PollHeader(headerName: "PROVINCIAL ASSEMBLY",),
+              PollHeader(
+                headerName: "PROVINCIAL ASSEMBLY",
+              ),
               Expanded(
                 //flex: 5,
                 child: Container(
@@ -180,38 +182,42 @@ class _MainPageState extends State<MainPage> {
                       DocumentSnapshot first = snapshot.data.documents.first;
                       var pollArray = first['pollOptions'];
                       print(pollArray);
-                      int i =0;
+                      int i = 0;
 
                       return ListView(
                         padding: const EdgeInsets.only(top: 20.0),
                         children: pollArray
-                            .map<Widget>((data) => _buildListItem(context, data, i++,_paRadioGroupValue,_handleRadioValueChange2))
+                            .map<Widget>((data) => _buildListItem(
+                                context,
+                                data,
+                                i++,
+                                _paRadioGroupValue,
+                                _handleRadioValueChange2))
                             .toList(),
                       );
                     },
                   ),
                   color: Theme.of(context).backgroundColor,
-
                 ),
               ),
               Container(
-                child:                 Padding(
+                child: Padding(
                   padding: const EdgeInsets.only(
                       left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: RaisedButton(
                     onPressed: paVoteCasted
                         ? null
                         : () {
-                      if (_paRadioGroupValue == -1) {
-                        showAlertDialog(context, 'Unable to proceed',
-                            'Please select a party to vote.');
-                      } else {
-                        setState(() {
-                          paVoteCasted = true;
-                        });
-                        controller.jumpToPage(2);
-                      }
-                    },
+                            if (_paRadioGroupValue == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                paVoteCasted = true;
+                              });
+                              controller.jumpToPage(2);
+                            }
+                          },
                     shape: Border.all(
                       color: paVoteCasted
                           ? Theme.of(context).disabledColor
@@ -229,7 +235,6 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 color: Theme.of(context).backgroundColor,
-
               )
             ],
           ),
@@ -242,15 +247,13 @@ class _MainPageState extends State<MainPage> {
           //                //
           // // // // // // //
           VotingResult()
-
         ],
       ),
       drawer: getDrawer(),
     );
   }
 
-  AppBar getAppBar()
-  {
+  AppBar getAppBar() {
     return AppBar(
       bottom: PreferredSize(
         preferredSize: Size.fromHeight(92.0),
@@ -334,8 +337,8 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildListItem(
-      BuildContext context, Map data, int index,int radioGroupValue,Function handleValueChange) {
+  Widget _buildListItem(BuildContext context, Map data, int index,
+      int radioGroupValue, Function handleValueChange) {
     print(index);
     print("data");
     final record = FirebaseNaResponse.fromMap(data);
@@ -354,18 +357,16 @@ class _MainPageState extends State<MainPage> {
     return item;
   }
 
-  Drawer getDrawer()
-  {
+  Drawer getDrawer() {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatarWithShadow(),
-                ]),
+            child:
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              CircleAvatarWithShadow(),
+            ]),
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
@@ -396,8 +397,7 @@ class _MainPageState extends State<MainPage> {
           ListTile(
             title: Row(
               children: [
-                Icon(Icons.settings,
-                    color: Theme.of(context).backgroundColor),
+                Icon(Icons.settings, color: Theme.of(context).backgroundColor),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text('Settings'),
@@ -437,7 +437,6 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-
 class FirebaseNaResponse {
   final String color;
   final String flag;
@@ -460,8 +459,3 @@ class FirebaseNaResponse {
   FirebaseNaResponse.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 }
-
-
-
-
-
