@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_page_indicator/flutter_page_indicator.dart';
+import 'package:voting_app/controls/poll_header.dart';
+import 'package:voting_app/controls/radio_list_item.dart';
 
 void main() => runApp(VotingApp());
 
@@ -115,45 +117,7 @@ class _MainPageState extends State<MainPage> {
       ),
     );
     return Scaffold(
-      appBar: AppBar(
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(92.0),
-          child: Column(
-            children: [
-              Text(
-                widget.title,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24.0),
-              ),
-              Text(
-                'SATURDAY, MARCH 16TH',
-                style: TextStyle(color: Theme.of(context).backgroundColor),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                child: Text(
-                  '${DateTime(2019, 03, 16).difference(DateTime.now()).inHours} Hours Away',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: PageIndicator(
-                  layout: PageIndicatorLayout.WARM,
-                  size: 8.0,
-                  controller: controller,
-                  space: 4.0,
-                  count: 3,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      appBar: getAppBar(),
       body: PageView(
         controller: controller,
         children: [
@@ -166,25 +130,36 @@ class _MainPageState extends State<MainPage> {
           // // // // // // //
 
 
-          //Not working
-          Container(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('polls').snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) return LinearProgressIndicator();
+          //Now working :D
+          Column(
+            children: <Widget>[
+              PollHeader(headerName: "NATIONAL ASSEMBLY",),
+              Expanded(
+                child: Container(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('polls').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return LinearProgressIndicator();
 
-                DocumentSnapshot first = snapshot.data.documents.first;
-                var pollArray = first['pollOptions'];
+                      DocumentSnapshot first = snapshot.data.documents.first;
+                      var pollArray = first['pollOptions'];
+                      int i =0;
 
-                return ListView(
-                  padding: const EdgeInsets.only(top: 20.0),
-                  children: pollArray
-                      .map((data) => _buildListItem(context, data, 0))
-                      .toList(),
-                );
-              },
-            ),
+                      return ListView(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        children: pollArray
+                            .map<Widget>((data) => _buildListItem(context, data, i++))
+                            .toList(),
+                      );
+                    },
+                  ),
+                  color: Theme.of(context).backgroundColor,
+
+                ),
+              ),
+            ],
           ),
+
 
 
           Container(
@@ -193,7 +168,7 @@ class _MainPageState extends State<MainPage> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 8),
                   child: Text(
-                    'NATIONAL ASSEMBLY',
+                    'NATIONAL ASSEMBLY1',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
@@ -726,6 +701,49 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  AppBar getAppBar()
+  {
+    return AppBar(
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(92.0),
+        child: Column(
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.0),
+            ),
+            Text(
+              'SATURDAY, MARCH 16TH',
+              style: TextStyle(color: Theme.of(context).backgroundColor),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              child: Text(
+                '${DateTime(2019, 03, 16).difference(DateTime.now()).inHours} Hours Away',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: PageIndicator(
+                layout: PageIndicatorLayout.WARM,
+                size: 8.0,
+                controller: controller,
+                space: 4.0,
+                count: 3,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void showAlertDialog(BuildContext context, String title, String message) {
     showDialog<void>(
       context: context,
@@ -735,7 +753,7 @@ class _MainPageState extends State<MainPage> {
           shape: Border.all(
             color: Theme.of(context).accentColor,
           ),
-          backgroundColor: Theme.of(context).backgroundColor,
+          //backgroundColor: Theme.of(context).backgroundColor,
           title: Text(
             title,
             style: TextStyle(
@@ -770,16 +788,22 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildListItem(
       BuildContext context, Map data, int index) {
+    print(index);
+    print("data");
     final record = FirebaseNaResponse.fromMap(data);
+    print("data from rdo");
+    //print(record?.flag);
 
-    return RadioListItem(
-      flag: record.flag,
-      fullName: record.fullName,
+    var item = RadioListItem(
+      flag: record?.flag,
+      fullName: record?.fullName,
       index: index,
-      initials: record.initials,
+      initials: record?.initials,
       radioValue1: _naRadioGroupValue,
       onChanged: _handleRadioValueChange1,
     );
+    print(item);
+    return item;
   }
 }
 
@@ -813,7 +837,7 @@ class FirebaseNaResponse {
         assert(map['initials'] != null),
         color = map['color'],
         flag = map['flag'],
-        fullName = map['initials'],
+        fullName = map['fullName'],
         initials = map['initials'],
         numberOfVoters = map['numberOfVoters'];
 
@@ -867,61 +891,5 @@ class CircleAvatarWithShadow extends StatelessWidget {
   }
 }
 
-class RadioListItem extends StatelessWidget {
-  const RadioListItem({
-    Key key,
-    @required int radioValue1,
-    @required int index,
-    @required this.onChanged,
-    @required this.fullName,
-    @required this.initials,
-    @required this.flag,
-  })  : _radioValue1 = radioValue1,
-        _index = index,
-        super(key: key);
 
-  final int _radioValue1;
-  final int _index;
-  final String fullName;
-  final String initials;
-  final String flag;
-  final RadioCallback onChanged;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          leading: Radio(
-            value: _index,
-            activeColor: Theme.of(context).accentColor,
-            groupValue: _radioValue1,
-            onChanged: onChanged,
-          ),
-          title: Text(
-            fullName,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).accentColor,
-            ),
-          ),
-          subtitle: Text(
-            initials,
-            style: TextStyle(
-              color: Theme.of(context).accentColor,
-            ),
-          ),
-          trailing: CircleAvatar(
-            backgroundImage: NetworkImage(flag),
-          ),
-        ),
-        Divider(
-          color: Theme.of(context).accentColor,
-          indent: 16.0,
-        ),
-      ],
-    );
-  }
-}
-
-typedef RadioCallback = void Function(int value);
