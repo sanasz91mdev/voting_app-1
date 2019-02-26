@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 import 'package:voting_app/controls/custom_circle_avatar.dart';
@@ -357,7 +356,7 @@ class _MainPageState extends State<MainPage> {
 
   Drawer getDrawer()
   {
-    Drawer(
+    return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
