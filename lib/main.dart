@@ -2,25 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_page_indicator/flutter_page_indicator.dart';
-import 'package:voting_app/live_view.dart';
-import 'package:voting_app/voting_results.dart';
-
-//TODO: can we put page view at the screen bottom below submit or finish button? there is a random exception at following 2 events:
-//1 - getting back from Live view to home
-//2 - Stepper tap
-//exception: The page property cannot be read when multiple PageViews are attached to the same PageController.
 
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
-  Color _primaryColor = Color(0xFF5AC4E5);
-  Color _secondaryColor = Color(0xFF030A27);
-  Color _accentColor = Colors.white;
-
-  Color _primaryColor1 = Color(0xFF5AC4E5);
-  Color _secondaryColor2 = Color(0xFF33691E); //TODO: thinking to give green, white (pakistan theme) outlook if others welcome this opinion
-  Color _accentColor3 = Colors.grey;
-
+  final Color _primaryColor = Color(0xFF5AC4E5);
+  final Color _secondaryColor = Color(0xFF030A27);
+  final Color _accentColor = Colors.white;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,9 +23,6 @@ class VotingApp extends StatelessWidget {
       home: MainPage(
         title: 'ELECTIONS 2019',
       ),
-      routes: {
-        '/vote_result': (context) => new LiveView(),
-      },
     );
   }
 }
@@ -55,50 +40,9 @@ class _MainPageState extends State<MainPage> {
   //final List<String> _allActivities = <String>['PTI', 'PMLN', 'MQM', 'TLP', 'PSP', 'PPP', 'PAT', 'ANP', 'JUI', ];
   //String _activity = 'PTI';
   int _radioValue1 = -1;
-  VotingData model = new VotingData(currentStep: 0);
-
-
-  List<Step> buildStepper() {
-    return [
-      Step(
-          title: Text(
-            "Poll 1",style: TextStyle(color: Colors.white),
-          ),
-          content: Container(),
-          state: StepState.indexed,
-          isActive: model.currentStep == 0),
-      Step(
-          title: Text(
-            "Poll 2",style: TextStyle(color: Colors.white)
-          ),
-          state: StepState.indexed,
-          content: Container(),
-          isActive: model.currentStep == 1),
-    ];
-  }
-
-  Widget getStepper()
-  {
-    final ThemeData theme = Theme.of(context);
-
-    return Theme(
-        data: theme.copyWith(canvasColor:theme.primaryColor,primaryColor: Color(0xFF030A27)),
-        child: SizedBox(
-          height: 74.0,
-          child: Stepper(
-            steps: buildStepper(),
-            type: StepperType.horizontal,
-            currentStep: model.currentStep,
-            onStepTapped: (step) {
-              setState(() {
-
-                model.currentStep = step;
-
-              });
-            },
-          ),
-        ));
-  }
+  bool naVoteCasted = false;
+  bool paVoteCasted = false;
+  bool votingComplete = false;
 
   void _handleRadioValueChange1(int value) {
     setState(() {
@@ -131,23 +75,60 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+    var data = [
+      Track("PPP", 250),
+      Track("PTI", 1250),
+      Track("PMLN", 450),
+      Track("TLP", 650),
+    ];
+    final provincial_data = [
+      Provincial('Sindh', 75, 'PPP'),
+      Provincial('Punjab', 100, 'PMLN'),
+      Provincial('Balochistan', 55, 'TLP'),
+      Provincial('KPK', 25, 'PTI'),
+    ];
+    final provincial_series = [
+      charts.Series<Provincial, String>(
+        id: 'provincialChart',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (Provincial winner, _) => winner.province,
+        measureFn: (Provincial winner, _) => winner.votes,
+        data: provincial_data,
+        labelAccessorFn: (Provincial winner, _) => winner.party,
+      ),
+    ];
+    var series = [
+      charts.Series(
+          domainFn: (Track track, _) => track.day,
+          measureFn: (Track track, _) => track.steps,
+          id: 'nationalChart',
+          data: data)
+    ];
 
-    final ThemeData theme = Theme.of(context);
+    var barChart = charts.BarChart(
+      provincial_series,
+      animate: false,
+      vertical: false,
+      barRendererDecorator: charts.BarLabelDecorator<String>(),
+    );
 
-
+    var pieChart = charts.PieChart(
+      series,
+      animate: true,
+      defaultRenderer: charts.ArcRendererConfig(
+        arcWidth: 30,
+        arcRendererDecorators: [charts.ArcLabelDecorator()],
+      ),
+    );
     return Scaffold(
-      key: _scaffoldKey,
       appBar: AppBar(
-        //leading: IconButton(icon: new Icon(Icons.settings,color: Colors.white,),onPressed: ()=>_scaffoldKey.currentState.openDrawer()),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(92.0),
           child: Column(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child:
-                Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.star, color: Theme.of(context).backgroundColor),
@@ -190,92 +171,6 @@ class _MainPageState extends State<MainPage> {
               ),
             ],
           ),
-        ),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text("Elections 2019",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 20.0,color: Colors.white),),
-                  Padding(
-                    padding: const EdgeInsets.only(top:48.0),
-                    child: Text("Sana Zehra",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 18.0,color: Colors.white),),
-                  ),
-                  Padding(padding: EdgeInsets.only(top: 8.0),),
-                  Text("Karachi, NA - 252",style: TextStyle(fontWeight: FontWeight.w500,fontSize: 18.0,color: Colors.white),)
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: theme.primaryColor,
-              ),
-            ),
-            ListTile(
-              title: Row(
-                children: <Widget>[
-                  Icon(Icons.assessment, color: Theme.of(context).backgroundColor),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Live Results'),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.pop(context);
-
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                    builder: (BuildContext context) => new LiveView()));              },
-            ),
-            Divider(
-              color: Colors.grey,
-            ),
-            ListTile(
-              title: Row(
-                children: <Widget>[
-                  Icon(Icons.settings, color: Theme.of(context).backgroundColor),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Settings'),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed("/vote_result");
-              },
-            ),
-            ListTile(
-              title: Row(
-                children: <Widget>[
-                  Icon(Icons.help_outline, color: Theme.of(context).backgroundColor),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Help & Feedback'),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed("/vote_result");
-              },
-            ),
-            ListTile(
-              title: Row(
-                children: <Widget>[
-                  Icon(Icons.info, color: Theme.of(context).backgroundColor),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('About'),
-                  ),
-                ],
-              ),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed("/vote_result");
-              },
-            ),
-          ],
         ),
       ),
       body: PageView(
@@ -459,7 +354,8 @@ class _MainPageState extends State<MainPage> {
                   indent: 16.0,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: FlatButton(
                     onPressed: () {
                       controller.jumpToPage(1);
@@ -488,9 +384,8 @@ class _MainPageState extends State<MainPage> {
           //                //
           // // // // // // //
 
-          model.currentStep==0? Container(
-            child:
-            ListView(
+          Container(
+            child: ListView(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 8),
@@ -513,14 +408,7 @@ class _MainPageState extends State<MainPage> {
                     Icon(Icons.star, color: Theme.of(context).primaryColor),
                   ],
                 ),
-
                 Padding(padding: const EdgeInsets.all(8.0)),
-                getStepper(),
-                Padding(padding: const EdgeInsets.all(8.0)),
-                Padding(
-                  padding: const EdgeInsets.only(left:32.0),
-                  child: Text("Vote for Sindh Assembly",style: TextStyle(color: Colors.white)),
-                ),
                 ListTile(
                   leading: Radio(
                     value: 0,
@@ -608,16 +496,70 @@ class _MainPageState extends State<MainPage> {
                   color: Theme.of(context).accentColor,
                   indent: 16.0,
                 ),
+                ListTile(
+                  leading: Radio(
+                    value: 3,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Pakistan People Party',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'PPP',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
+                ListTile(
+                  leading: Radio(
+                    value: 4,
+                    activeColor: Theme.of(context).accentColor,
+                    groupValue: _radioValue1,
+                    onChanged: _handleRadioValueChange1,
+                  ),
+                  title: Text(
+                    'Awami National Party',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'ANP',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                    ),
+                  ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                Divider(
+                  color: Theme.of(context).accentColor,
+                  indent: 16.0,
+                ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
+                  padding: const EdgeInsets.only(
+                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
                   child: FlatButton(
                     onPressed: () {
-                      setState(() {
-                        print("called");
-                        model.currentStep=1;
-                      });
-
-
+                      controller.jumpToPage(2);
                     },
                     shape: Border.all(
                       color: Theme.of(context).accentColor,
@@ -633,148 +575,8 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
             color: Theme.of(context).backgroundColor,
-          ):
-          Container(
-            child:
-            ListView(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 8),
-                  child: Text(
-                    'PROVINCIAL ASSEMBLY',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24.0),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.star, color: Theme.of(context).primaryColor),
-                    Icon(Icons.star, color: Colors.red),
-                    Icon(Icons.star, color: Theme.of(context).primaryColor),
-                    Icon(Icons.star, color: Colors.red),
-                    Icon(Icons.star, color: Theme.of(context).primaryColor),
-                  ],
-                ),
-
-                Padding(padding: const EdgeInsets.all(8.0)),
-                getStepper(),
-                Padding(padding: const EdgeInsets.all(8.0)),
-                Padding(
-                  padding: const EdgeInsets.only(left:32.0),
-                  child: Text("Vote for Punjab Assembly",style: TextStyle(color: Colors.white)),
-                ),
-                ListTile(
-                  leading: Radio(
-                    value: 0,
-                    activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
-                  ),
-                  title: Text(
-                    'Pakistan Tahrek-e-Insaf',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'PTI',
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                Divider(
-                  color: Theme.of(context).accentColor,
-                  indent: 16.0,
-                ),
-                ListTile(
-                  leading: Radio(
-                    value: 1,
-                    activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
-                  ),
-                  title: Text(
-                    'Tahrek-e-Labaik Pakistan',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'TLP',
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                Divider(
-                  color: Theme.of(context).accentColor,
-                  indent: 16.0,
-                ),
-                ListTile(
-                  leading: Radio(
-                    value: 2,
-                    activeColor: Theme.of(context).accentColor,
-                    groupValue: _radioValue1,
-                    onChanged: _handleRadioValueChange1,
-                  ),
-                  title: Text(
-                    'Pakistan Muslim League',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'PMLN',
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                Divider(
-                  color: Theme.of(context).accentColor,
-                  indent: 16.0,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0,right: 16.0,bottom: 16.0,top: 8),
-                  child: FlatButton(
-                    onPressed: () {
-                      controller.jumpToPage(2);
-                    },
-                    shape: Border.all(
-                      color: Theme.of(context).accentColor,
-                    ),
-                    child: Text(
-                      'FINISH',
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-            color: Theme.of(context).backgroundColor,
           ),
+
           //End of second page
           //                //
           //                //
@@ -783,64 +585,223 @@ class _MainPageState extends State<MainPage> {
           //                //
           // // // // // // //
 
-          VotingResults()
-
+          ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                child: Text(
+                  'NATIONAL ASSEMBLY',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Theme.of(context).backgroundColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Card(
+                    child: SizedBox(
+                  height: 194,
+                  child: pieChart,
+                )),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+                child: Text(
+                  'PROVINCIAL ASSEMBLY',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: Theme.of(context).backgroundColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+                child: Card(
+                    child: SizedBox(
+                  height: 194,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: barChart,
+                  ),
+                )),
+              ),
+            ],
+          ),
         ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            DrawerHeader(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Elections 2019",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20.0,
+                        color: Colors.white),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 48.0),
+                    child: Text(
+                      "Sana Zehra",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.0,
+                          color: Colors.white),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                  ),
+                  Text(
+                    "Karachi, NA - 252",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18.0,
+                        color: Colors.white),
+                  )
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.assessment,
+                      color: Theme.of(context).backgroundColor),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('Live Results'),
+                  ),
+                ],
+              ),
+              onTap: null,
+            ),
+            Divider(
+              color: Colors.grey,
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.settings,
+                      color: Theme.of(context).backgroundColor),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('Settings'),
+                  ),
+                ],
+              ),
+              onTap: null,
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.help_outline,
+                      color: Theme.of(context).backgroundColor),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('Help & Feedback'),
+                  ),
+                ],
+              ),
+              onTap: null,
+            ),
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Icon(Icons.info, color: Theme.of(context).backgroundColor),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('About'),
+                  ),
+                ],
+              ),
+              onTap: null,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-//  Widget _buildBody(BuildContext context) {
-//    return StreamBuilder<QuerySnapshot>(
-//      stream: Firestore.instance.collection('users').snapshots(),
-//      builder: (context, snapshot) {
-//        if (!snapshot.hasData) return LinearProgressIndicator();
-//
-//        return _buildList(context, snapshot.data.documents);
-//      },
-//    );
-//  }
-//
-//  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-//    return Expanded(
-//      child: ListView(
-//        padding: const EdgeInsets.only(top: 20.0),
-//        children:
-//            snapshot.map((data) => _buildListItem(context, data)).toList(),
-//      ),
-//    );
-//  }
-//
-//  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-//    final record = Record.fromSnapshot(data);
-//
-//    return Padding(
-//      key: ValueKey(record.name),
-//      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-//      child: Container(
-//        decoration: BoxDecoration(
-//          border: Border.all(color: Colors.purple),
-//          borderRadius: BorderRadius.circular(5.0),
-//        ),
-//        child: ListTile(
-//          title: Text(record.name),
-//          trailing: Text(record.age.toString()),
-//          onTap: () => print(record),
-//        ),
-//      ),
-//    );
-//  }
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('users').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        return _buildList(context, snapshot.data.documents);
+      },
+    );
+  }
+
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return Expanded(
+      child: ListView(
+        padding: const EdgeInsets.only(top: 20.0),
+        children:
+            snapshot.map((data) => _buildListItem(context, data)).toList(),
+      ),
+    );
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    final record = Record.fromSnapshot(data);
+
+    return Padding(
+      key: ValueKey(record.name),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.purple),
+          borderRadius: BorderRadius.circular(5.0),
+        ),
+        child: ListTile(
+          title: Text(record.name),
+          trailing: Text(record.age.toString()),
+          onTap: () => print(record),
+        ),
+      ),
+    );
+  }
 }
 
+class Track {
+  final String day;
+  final int steps;
 
-
-class VotingData
-{
-  int currentStep = 0;
-  int pageView=0;
-
-  VotingData({this.currentStep,this.pageView});
-
+  Track(this.day, this.steps);
 }
 
+class Provincial {
+  final String province;
+  final int votes;
+  final String party;
 
+  Provincial(this.province, this.votes, this.party);
+}
+
+class Record {
+  final String name;
+  final int age;
+  final DocumentReference reference;
+
+  Record.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['age'] != null),
+        name = map['name'],
+        age = map['age'];
+
+  Record.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$name:$age>";
+}
