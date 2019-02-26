@@ -16,20 +16,64 @@ class VotingResult extends StatefulWidget
 
 class VotingResultState extends State<VotingResult>
 {
+  List<NationalAssemblyPollsResult> nationalAssemblyResultList = new List<NationalAssemblyPollsResult>();
+  bool isNaResultReady =false;
+  var naDataElements;
+  var series;
+  var pieChart;
+
+  Future<List<dynamic>> getPollOptions() async {
+    DocumentSnapshot snapshot= await Firestore.instance.collection('polls').document('NationalAssemblyPoll').get();
+    var channelName = snapshot['pollOptions'];
+    print(channelName);
+      return channelName;
+
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    getPollOptions().then((data){
+      print("pollOptionsresuly");
+      print(data);
+      data.forEach((element)=>nationalAssemblyResultList.add(new NationalAssemblyPollsResult(element['initials'], element['numberOfVotes'], charts.Color.fromHex(code:element['color']))));
+      print(nationalAssemblyResultList[0].numberOfVotes);
+
+      naDataElements = nationalAssemblyResultList;
+      series = [
+        charts.Series(
+            domainFn: (NationalAssemblyPollsResult naResult, _) => naResult.partyInitial,
+            colorFn: (NationalAssemblyPollsResult naResult, _) => naResult.color,
+            measureFn: (NationalAssemblyPollsResult naResult, _) => naResult.numberOfVotes,
+            id: 'nationalChart',
+            data: naDataElements)
+      ];
+
+      setState(() {
+        pieChart = charts.PieChart(
+          series,
+          animate: true,
+          defaultRenderer: charts.ArcRendererConfig(
+            arcWidth: 30,
+            arcRendererDecorators: [charts.ArcLabelDecorator()],
+          ),
+        );
+
+
+        isNaResultReady= true;
+      });
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    void initState() {
-      super.initState();
 
-    }
 
-    var data = [
-      Track("PPP", 250),
-      Track("PTI", 1250),
-      Track("PMLN", 450),
-      Track("TLP", 650),
-    ];
+
+
     final provincial_data = [
       Provincial('Sindh', 75, 'PPP'),
       Provincial('Punjab', 100, 'PMLN'),
@@ -46,14 +90,7 @@ class VotingResultState extends State<VotingResult>
         labelAccessorFn: (Provincial winner, _) => winner.party,
       ),
     ];
-    var series = [
-      charts.Series(
-          domainFn: (Track track, _) => track.day,
-          colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
-          measureFn: (Track track, _) => track.steps,
-          id: 'nationalChart',
-          data: data)
-    ];
+
 
     var barChart = charts.BarChart(
       provincial_series,
@@ -62,14 +99,7 @@ class VotingResultState extends State<VotingResult>
       barRendererDecorator: charts.BarLabelDecorator<String>(),
     );
 
-    var pieChart = charts.PieChart(
-      series,
-      animate: true,
-      defaultRenderer: charts.ArcRendererConfig(
-        arcWidth: 30,
-        arcRendererDecorators: [charts.ArcLabelDecorator()],
-      ),
-    );
+
 
     return           ListView(
       children: [
@@ -88,7 +118,7 @@ class VotingResultState extends State<VotingResult>
           child: Card(
               child: SizedBox(
                 height: 194,
-                child: pieChart,
+                child: isNaResultReady?pieChart:Center(child: CircularProgressIndicator(backgroundColor: Colors.green,),),
               )),
         ),
         Padding(
@@ -119,11 +149,13 @@ class VotingResultState extends State<VotingResult>
 
 }
 
-class Track {
-  final String day;
-  final int steps;
+class NationalAssemblyPollsResult {
+  final String partyInitial;
+  final int numberOfVotes;
+  final charts.Color color;
 
-  Track(this.day, this.steps);
+
+  NationalAssemblyPollsResult(this.partyInitial, this.numberOfVotes,this.color);
 }
 
 class Provincial {
