@@ -19,6 +19,11 @@ class LiveViewState extends State<LiveView>
   @override
   Widget build(BuildContext context) {
 
+    void initState() {
+      super.initState();
+
+    }
+
     var data = [
       Track("PPP", 250),
       Track("PTI", 1250),
