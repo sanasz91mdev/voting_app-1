@@ -12,6 +12,9 @@ class VotingResult extends StatefulWidget {
 class VotingResultState extends State<VotingResult> {
   List<NationalAssemblyPollsResult> nationalAssemblyResultList =
       new List<NationalAssemblyPollsResult>();
+  List<ProvincialAssemblyPollResult> provincialAssemblyPollResultList =
+      new List<ProvincialAssemblyPollResult>();
+  List<ProvinceHelper> provinceHelperList = new List<ProvinceHelper>();
   bool isNaResultReady = false;
   var naDataElements;
   var series;
@@ -22,9 +25,8 @@ class VotingResultState extends State<VotingResult> {
         .collection('polls')
         .document('NationalAssemblyPoll')
         .get();
-    var channelName = snapshot['pollOptions'];
-    print(channelName);
-    return channelName;
+    var polls = snapshot['pollOptions'];
+    return polls;
   }
 
   @override
@@ -70,30 +72,6 @@ class VotingResultState extends State<VotingResult> {
 
   @override
   Widget build(BuildContext context) {
-    final provincial_data = [
-      Provincial('Sindh', 75, 'PPP'),
-      Provincial('Punjab', 100, 'PMLN'),
-      Provincial('Balochistan', 55, 'TLP'),
-      Provincial('KPK', 25, 'PTI'),
-    ];
-    final provincial_series = [
-      charts.Series<Provincial, String>(
-        id: 'provincialChart',
-        colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
-        domainFn: (Provincial winner, _) => winner.province,
-        measureFn: (Provincial winner, _) => winner.votes,
-        data: provincial_data,
-        labelAccessorFn: (Provincial winner, _) => winner.party,
-      ),
-    ];
-
-    var barChart = charts.BarChart(
-      provincial_series,
-      animate: false,
-      vertical: false,
-      barRendererDecorator: charts.BarLabelDecorator<String>(),
-    );
-
     return ListView(
       children: [
         Padding(
@@ -171,10 +149,89 @@ class VotingResultState extends State<VotingResult> {
           padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
           child: Card(
               child: SizedBox(
-            height: 194,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: barChart,
+            height: 194, //TODO: refactor provincial stream builder
+            child: StreamBuilder<QuerySnapshot>(
+              stream: Firestore.instance.collection('polls').snapshots(),
+              builder: (context, snapshot) {
+                provincialAssemblyPollResultList =
+                    new List<ProvincialAssemblyPollResult>();
+                if (!snapshot.hasData)
+                  return LinearProgressIndicator(
+                    backgroundColor: Colors.orange,
+                  );
+                DocumentSnapshot first = snapshot.data.documents.last;
+                var pollResults = first['pollOptionsBalochistan'][0];
+
+                provincialAssemblyPollResultList.add(
+                    new ProvincialAssemblyPollResult(
+                        'Balochistan',
+                        pollResults['numberOfVotes'],
+                        pollResults['initials'],
+                        charts.Color.fromHex(code: pollResults['color'])));
+
+                var pollResultsKPK = first['pollOptionsKPK'][0];
+
+                provincialAssemblyPollResultList.add(
+                    new ProvincialAssemblyPollResult(
+                        'KPK',
+                        pollResultsKPK['numberOfVotes'],
+                        pollResultsKPK['initials'],
+                        charts.Color.fromHex(code: pollResultsKPK['color'])));
+
+                var pollResultsPunjab = first['pollOptionsPunjab'][0];
+
+                provincialAssemblyPollResultList.add(
+                    new ProvincialAssemblyPollResult(
+                        'Punjab',
+                        pollResultsPunjab['numberOfVotes'],
+                        pollResultsPunjab['initials'],
+                        charts.Color.fromHex(
+                            code: pollResultsPunjab['color'])));
+
+                var pollResultsSindh = first['pollOptionsSindh'];
+
+                pollResultsSindh.forEach((element) => provinceHelperList.add(
+                    new ProvinceHelper(
+                        "Sindh",
+                        element['numberOfVotes'],
+                        element['initials'],
+                        charts.Color.fromHex(code: element['color']))));
+
+                provinceHelperList.sort((a, b) => a.votes.compareTo(b.votes));
+                var sindhPartyWithMaxVotes =
+                    provinceHelperList[provinceHelperList.length - 1];
+
+                provincialAssemblyPollResultList.add(
+                    new ProvincialAssemblyPollResult(
+                        "Sindh",
+                        sindhPartyWithMaxVotes.votes,
+                        sindhPartyWithMaxVotes.party,
+                        sindhPartyWithMaxVotes.color));
+
+                var provincialSeries = [
+                  charts.Series<ProvincialAssemblyPollResult, String>(
+                    id: 'provincialChart',
+                    colorFn: (ProvincialAssemblyPollResult winner, _) =>
+                        winner.color,
+                    domainFn: (ProvincialAssemblyPollResult winner, _) =>
+                        winner.province,
+                    measureFn: (ProvincialAssemblyPollResult winner, _) =>
+                        winner.votes,
+                    data: provincialAssemblyPollResultList,
+                    labelAccessorFn: (ProvincialAssemblyPollResult winner, _) =>
+                        winner.party,
+                  ),
+                ];
+
+                var barChart = charts.BarChart(
+                  provincialSeries,
+                  animate: false,
+                  vertical: false,
+                  barRendererDecorator: charts.BarLabelDecorator<String>(),
+                );
+
+                return barChart;
+              },
             ),
           )),
         ),
@@ -192,10 +249,22 @@ class NationalAssemblyPollsResult {
       this.partyInitial, this.numberOfVotes, this.color);
 }
 
-class Provincial {
+class ProvincialAssemblyPollResult {
   final String province;
   final int votes;
   final String party;
+  final charts.Color color;
 
-  Provincial(this.province, this.votes, this.party);
+  ProvincialAssemblyPollResult(
+      this.province, this.votes, this.party, this.color);
+}
+
+//TODO: Refactor other way
+class ProvinceHelper {
+  final String province;
+  final int votes;
+  final String party;
+  final charts.Color color;
+
+  ProvinceHelper(this.province, this.votes, this.party, this.color);
 }
