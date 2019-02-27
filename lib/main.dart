@@ -179,8 +179,8 @@ class _MainPageState extends State<MainPage> {
                     stream: Firestore.instance.collection('polls').snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return LinearProgressIndicator();
-                      DocumentSnapshot first = snapshot.data.documents.first;
-                      var pollArray = first['pollOptions'];
+                      DocumentSnapshot first = snapshot.data.documents.last;
+                      var pollArray = first['pollOptionsSindh'];
                       print(pollArray);
                       int i = 0;
 
