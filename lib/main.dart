@@ -11,12 +11,15 @@ void main() => runApp(VotingApp());
 class VotingApp extends StatelessWidget {
   final Color _primaryColor = Color(0xFF00c853);
   final Color _secondaryColor = Color(0xFF1b5e20);
+  final Color _secondaryTextColor = Colors.black;
   final Color _accentColor = Colors.white;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Voting App',
       theme: ThemeData(
+        secondaryHeaderColor: _secondaryTextColor,
         backgroundColor: _secondaryColor,
         primaryColor: _primaryColor,
         accentColor: _accentColor,
@@ -41,247 +44,65 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   PageController controller;
-  //final List<String> _allActivities = <String>['PTI', 'PMLN', 'MQM', 'TLP', 'PSP', 'PPP', 'PAT', 'ANP', 'JUI', ];
-  //String _activity = 'PTI';
   int _naRadioGroupValue = -1;
   int _paRadioGroupValue = -1;
-  bool naVoteCasted = false;
-  bool paVoteCasted = false;
-  bool votingComplete = false;
+  bool _naVoteCasted = false;
+  bool _paVoteCasted = false;
 
-  void _handleRadioValueChange1(int value) {
-    if (!naVoteCasted) {
+  void _handleRadioValueChangeNA(int value) {
+    if (!_naVoteCasted) {
       setState(() {
         _naRadioGroupValue = value;
       });
     }
   }
 
-  void _handleRadioValueChange2(int value) {
-    if (!paVoteCasted) {
+  void _handleRadioValueChangePA(int value) {
+    if (!_paVoteCasted) {
       setState(() {
         _paRadioGroupValue = value;
       });
     }
   }
 
-  @override
-  void initState() {
-    controller = new PageController(initialPage: 0);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: getAppBar(),
-      body: PageView(
-        controller: controller,
-        children: [
-          //Start of first page
-          //                //
-          //                //
-          //                //
-          //                //
-          //                //
-          // // // // // // //
-
-          //Now working :D
-          Column(
-            children: <Widget>[
-              PollHeader(
-                headerName: "NATIONAL ASSEMBLY",
-              ),
-              Expanded(
-                //flex: 5,
-                child: Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: Firestore.instance.collection('polls').snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return LinearProgressIndicator();
-
-                      DocumentSnapshot first = snapshot.data.documents.first;
-                      var pollArray = first['pollOptions'];
-                      int i = 0;
-
-                      return ListView(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        children: pollArray
-                            .map<Widget>((data) => _buildListItem(
-                                context,
-                                data,
-                                i++,
-                                _naRadioGroupValue,
-                                _handleRadioValueChange1))
-                            .toList(),
-                      );
-                    },
-                  ),
-                  color: Theme.of(context).backgroundColor,
-                ),
-              ),
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
-                  child: RaisedButton(
-                    onPressed: naVoteCasted
-                        ? null
-                        : () {
-                            if (_naRadioGroupValue == -1) {
-                              showAlertDialog(context, 'Unable to proceed',
-                                  'Please select a party to vote.');
-                            } else {
-                              setState(() {
-                                naVoteCasted = true;
-                              });
-                              controller.jumpToPage(1);
-                            }
-                          },
-                    shape: Border.all(
-                      color: naVoteCasted
-                          ? Theme.of(context).disabledColor
-                          : Theme.of(context).accentColor,
-                    ),
-                    color: Theme.of(context).backgroundColor,
-                    child: Text(
-                      'SUBMIT',
-                      style: TextStyle(
-                        color: naVoteCasted
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).accentColor,
-                      ),
-                    ),
-                  ),
-                ),
-                color: Theme.of(context).backgroundColor,
-              )
-            ],
-          ),
-
-          //End of first page
-          //                //
-          //                //
-          //                //
-          //                //
-          //                //
-          // // // // // // //
-
-          Column(
-            children: <Widget>[
-              PollHeader(
-                headerName: "PROVINCIAL ASSEMBLY",
-              ),
-              Expanded(
-                //flex: 5,
-                child: Container(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: Firestore.instance.collection('polls').snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return LinearProgressIndicator();
-                      DocumentSnapshot first = snapshot.data.documents.last;
-                      var pollArray = first['pollOptionsSindh'];
-                      print(pollArray);
-                      int i = 0;
-
-                      return ListView(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        children: pollArray
-                            .map<Widget>((data) => _buildListItem(
-                                context,
-                                data,
-                                i++,
-                                _paRadioGroupValue,
-                                _handleRadioValueChange2))
-                            .toList(),
-                      );
-                    },
-                  ),
-                  color: Theme.of(context).backgroundColor,
-                ),
-              ),
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 16.0, right: 16.0, bottom: 16.0, top: 8),
-                  child: RaisedButton(
-                    onPressed: paVoteCasted
-                        ? null
-                        : () {
-                            if (_paRadioGroupValue == -1) {
-                              showAlertDialog(context, 'Unable to proceed',
-                                  'Please select a party to vote.');
-                            } else {
-                              setState(() {
-                                paVoteCasted = true;
-                              });
-                              controller.jumpToPage(2);
-                            }
-                          },
-                    shape: Border.all(
-                      color: paVoteCasted
-                          ? Theme.of(context).disabledColor
-                          : Theme.of(context).accentColor,
-                    ),
-                    color: Theme.of(context).backgroundColor,
-                    child: Text(
-                      'SUBMIT',
-                      style: TextStyle(
-                        color: paVoteCasted
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).accentColor,
-                      ),
-                    ),
-                  ),
-                ),
-                color: Theme.of(context).backgroundColor,
-              )
-            ],
-          ),
-
-          //End of second page
-          //                //
-          //                //
-          //                //
-          //                //
-          //                //
-          // // // // // // //
-          VotingResult()
-        ],
-      ),
-      drawer: getDrawer(),
-    );
-  }
-
-  AppBar getAppBar() {
+  buildAppBar() {
     return AppBar(
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(92.0),
+        preferredSize: Size.fromHeight(88.0),
         child: Column(
           children: [
+            // Application title
             Text(
               widget.title,
               style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 24.0),
             ),
+
+            // Election date label
             Text(
               'SATURDAY, MARCH 16TH',
-              style: TextStyle(color: Theme.of(context).backgroundColor),
+              style: TextStyle(color: Theme.of(context).secondaryHeaderColor),
             ),
+
+            // Time remaining label
             Padding(
-              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: Text(
                 '${DateTime(2019, 03, 16).difference(DateTime.now()).inHours} Hours Away',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Theme.of(context).accentColor,
                 ),
               ),
             ),
+
+            // Page indicator
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(bottom: 8.0),
               child: PageIndicator(
+                color: Theme.of(context).accentColor,
+                activeColor: Theme.of(context).backgroundColor,
                 layout: PageIndicatorLayout.WARM,
                 size: 8.0,
                 controller: controller,
@@ -292,6 +113,188 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
       ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(initialPage: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: buildAppBar(),
+      body: PageView(
+        controller: controller,
+        children: [
+          // Start of first page
+          // // // // // // // //
+          Container(
+            color: Theme.of(context).backgroundColor,
+            child: Column(
+              children: <Widget>[
+                //Poll title
+                PollHeader(
+                  headerName: "NATIONAL ASSEMBLY",
+                ),
+
+                // List of poll options
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('polls').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return LinearProgressIndicator();
+
+                      DocumentSnapshot nationalAssemblyPoll =
+                          snapshot.data.documents.first;
+                      var pollOptionsArray =
+                          nationalAssemblyPoll['pollOptions'];
+                      int index = 0;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ListView(
+                          children: pollOptionsArray
+                              .map<Widget>((data) => buildListItem(
+                                  data,
+                                  index++,
+                                  _naRadioGroupValue,
+                                  _handleRadioValueChangeNA))
+                              .toList(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Submit button
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: RaisedButton(
+                    onPressed: _naVoteCasted
+                        ? null
+                        : () {
+                            if (_naRadioGroupValue == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                _naVoteCasted = true;
+                              });
+                              showAlertDialog(context, 'Success',
+                                  'Your vote has been submitted successfully.');
+                              controller.jumpToPage(1);
+                            }
+                          },
+                    shape: Border.all(
+                      color: _naVoteCasted
+                          ? Theme.of(context).disabledColor
+                          : Theme.of(context).accentColor,
+                    ),
+                    color: Theme.of(context).backgroundColor,
+                    child: Text(
+                      'SUBMIT',
+                      style: TextStyle(
+                        color: _naVoteCasted
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+
+          // End of first page
+          // // // // // // //
+
+          Container(
+            color: Theme.of(context).backgroundColor,
+            child: Column(
+              children: <Widget>[
+                //Poll title
+                PollHeader(
+                  headerName: "PROVINCIAL ASSEMBLY",
+                ),
+
+                // List of poll options
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('polls').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return LinearProgressIndicator();
+
+                      DocumentSnapshot provincialAssemblyPoll =
+                          snapshot.data.documents.last;
+                      var pollOptionsArray =
+                          provincialAssemblyPoll['pollOptionsSindh'];
+                      int index = 0;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ListView(
+                          children: pollOptionsArray
+                              .map<Widget>((data) => buildListItem(
+                                  data,
+                                  index++,
+                                  _paRadioGroupValue,
+                                  _handleRadioValueChangePA))
+                              .toList(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // Submit button
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: RaisedButton(
+                    onPressed: _paVoteCasted
+                        ? null
+                        : () {
+                            if (_paRadioGroupValue == -1) {
+                              showAlertDialog(context, 'Unable to proceed',
+                                  'Please select a party to vote.');
+                            } else {
+                              setState(() {
+                                _paVoteCasted = true;
+                              });
+                              showAlertDialog(context, 'Success',
+                                  'Your vote has been submitted successfully.');
+                              controller.jumpToPage(2);
+                            }
+                          },
+                    shape: Border.all(
+                      color: _paVoteCasted
+                          ? Theme.of(context).disabledColor
+                          : Theme.of(context).accentColor,
+                    ),
+                    color: Theme.of(context).backgroundColor,
+                    child: Text(
+                      'SUBMIT',
+                      style: TextStyle(
+                        color: _paVoteCasted
+                            ? Theme.of(context).disabledColor
+                            : Theme.of(context).accentColor,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+
+          // End of second page
+          // // // // // // //
+
+          VotingResult()
+        ],
+      ),
+      drawer: buildDrawer(),
     );
   }
 
@@ -337,27 +340,21 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _buildListItem(BuildContext context, Map data, int index,
-      int radioGroupValue, Function handleValueChange) {
-    print(index);
-    print("data");
-    final record = FirebaseNaResponse.fromMap(data);
-    print("data from rdo");
-    //print(record?.flag);
+  Widget buildListItem(
+      Map data, int index, int radioGroupValue, Function handleValueChange) {
+    final record = FirebaseResponse.fromMap(data);
 
-    var item = RadioListItem(
+    return RadioListItem(
       flag: record?.flag,
       fullName: record?.fullName,
       index: index,
       initials: record?.initials,
-      radioValue1: radioGroupValue,
+      radioValue: radioGroupValue,
       onChanged: handleValueChange,
     );
-    print(item);
-    return item;
   }
 
-  Drawer getDrawer() {
+  Drawer buildDrawer() {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -437,7 +434,7 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-class FirebaseNaResponse {
+class FirebaseResponse {
   final String color;
   final String flag;
   final String fullName;
@@ -445,7 +442,7 @@ class FirebaseNaResponse {
   final int numberOfVoters;
   final DocumentReference reference;
 
-  FirebaseNaResponse.fromMap(Map<dynamic, dynamic> map, {this.reference})
+  FirebaseResponse.fromMap(Map<dynamic, dynamic> map, {this.reference})
       : assert(map['color'] != null),
         assert(map['flag'] != null),
         assert(map['fullName'] != null),
@@ -455,7 +452,4 @@ class FirebaseNaResponse {
         fullName = map['fullName'],
         initials = map['initials'],
         numberOfVoters = map['numberOfVoters'];
-
-  FirebaseNaResponse.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
 }

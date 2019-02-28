@@ -4,17 +4,17 @@ import 'package:meta/meta.dart';
 class RadioListItem extends StatelessWidget {
   const RadioListItem({
     Key key,
-    @required int radioValue1,
+    @required int radioValue,
     @required int index,
     @required this.onChanged,
     @required this.fullName,
     @required this.initials,
     @required this.flag,
-  })  : _radioValue1 = radioValue1,
+  })  : _radioValue = radioValue,
         _index = index,
         super(key: key);
 
-  final int _radioValue1;
+  final int _radioValue;
   final int _index;
   final String fullName;
   final String initials;
@@ -29,7 +29,7 @@ class RadioListItem extends StatelessWidget {
           leading: Radio(
             value: _index,
             activeColor: Theme.of(context).accentColor,
-            groupValue: _radioValue1,
+            groupValue: _radioValue,
             onChanged: onChanged,
           ),
           title: Text(

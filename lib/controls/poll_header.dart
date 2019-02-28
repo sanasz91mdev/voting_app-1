@@ -10,6 +10,7 @@ class PollHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).backgroundColor,
       child: Column(
         children: <Widget>[
           Padding(
@@ -18,7 +19,7 @@ class PollHeader extends StatelessWidget {
               headerName,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).accentColor,
                 fontWeight: FontWeight.bold,
                 fontSize: 24.0,
               ),
@@ -28,16 +29,14 @@ class PollHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.star, color: Theme.of(context).primaryColor),
-              Icon(Icons.star, color: Colors.red),
+              Icon(Icons.star, color: Theme.of(context).accentColor),
               Icon(Icons.star, color: Theme.of(context).primaryColor),
-              Icon(Icons.star, color: Colors.red),
+              Icon(Icons.star, color: Theme.of(context).accentColor),
               Icon(Icons.star, color: Theme.of(context).primaryColor),
             ],
           ),
-          Padding(padding: const EdgeInsets.all(8.0)),
         ],
       ),
-      color: Theme.of(context).backgroundColor,
     );
   }
 }
