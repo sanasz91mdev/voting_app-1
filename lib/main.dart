@@ -185,7 +185,6 @@ class _MainPageState extends State<MainPage> {
                               });
                               showAlertDialog(context, 'Success',
                                   'Your vote has been submitted successfully.');
-                              controller.jumpToPage(1);
                             }
                           },
                     shape: Border.all(
@@ -265,7 +264,6 @@ class _MainPageState extends State<MainPage> {
                               });
                               showAlertDialog(context, 'Success',
                                   'Your vote has been submitted successfully.');
-                              controller.jumpToPage(2);
                             }
                           },
                     shape: Border.all(
