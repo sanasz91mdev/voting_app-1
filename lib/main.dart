@@ -184,7 +184,7 @@ class _MainPageState extends State<MainPage> {
                               setState(() {
                                 _naVoteCasted = true;
                               });
-                             addNationalAssemblyVote(_naRadioGroupValue);
+                              addNationalAssemblyVote(_naRadioGroupValue);
                               showAlertDialog(context, 'Success',
                                   'Your vote has been submitted successfully.');
                             }
