@@ -261,9 +261,11 @@ class _MainPageState extends State<MainPage> {
                               showAlertDialog(context, 'Unable to proceed',
                                   'Please select a party to vote.');
                             } else {
+                              
                               setState(() {
                                 _paVoteCasted = true;
                               });
+                              addProvincialAssemblyVote(_paRadioGroupValue);
                               showAlertDialog(context, 'Success',
                                   'Your vote has been submitted successfully.');
                             }

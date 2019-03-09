@@ -14,3 +14,19 @@ void addNationalAssemblyVote(int index) async {
     }
   });
 }
+
+
+void addProvincialAssemblyVote(int index) async{
+    final DocumentReference postRef =
+      Firestore.instance.document('polls/ProvincialAssemblyPoll');
+  Firestore.instance.runTransaction((Transaction tx) async {
+    DocumentSnapshot postSnapshot = await tx.get(postRef);
+
+    postSnapshot.data['pollOptionsSindh'][index]['numberOfVotes'] += 1;
+
+    if (postSnapshot.exists) {
+      await tx.update(postRef,
+          <String, dynamic>{'pollOptionsSindh': postSnapshot.data['pollOptionsSindh']});
+    }
+  });
+}
