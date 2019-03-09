@@ -5,6 +5,7 @@ import 'package:voting_app/controls/custom_circle_avatar.dart';
 import 'package:voting_app/controls/poll_header.dart';
 import 'package:voting_app/controls/radio_list_item.dart';
 import 'package:voting_app/controls/voting_results.dart';
+import 'package:voting_app/models/firestore_helper.dart';
 
 void main() => runApp(VotingApp());
 
@@ -183,6 +184,7 @@ class _MainPageState extends State<MainPage> {
                               setState(() {
                                 _naVoteCasted = true;
                               });
+                             addNationalAssemblyVote(_naRadioGroupValue);
                               showAlertDialog(context, 'Success',
                                   'Your vote has been submitted successfully.');
                             }
