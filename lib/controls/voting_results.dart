@@ -32,42 +32,6 @@ class VotingResultState extends State<VotingResult> {
   @override
   void initState() {
     super.initState();
-//    getPollOptions().then((data) {
-//      print("pollOptionsresuly");
-//      print(data);
-//      data.forEach((element) => nationalAssemblyResultList.add(
-//          new NationalAssemblyPollsResult(
-//              element['initials'],
-//              element['numberOfVotes'],
-//              charts.Color.fromHex(code: element['color']))));
-//      print(nationalAssemblyResultList[0].numberOfVotes);
-//
-//      naDataElements = nationalAssemblyResultList;
-//      series = [
-//        charts.Series(
-//            domainFn: (NationalAssemblyPollsResult naResult, _) =>
-//                naResult.partyInitial,
-//            colorFn: (NationalAssemblyPollsResult naResult, _) =>
-//                naResult.color,
-//            measureFn: (NationalAssemblyPollsResult naResult, _) =>
-//                naResult.numberOfVotes,
-//            id: 'nationalChart',
-//            data: naDataElements)
-//      ];
-//
-//      setState(() {
-//        pieChart = charts.PieChart(
-//          series,
-//          animate: true,
-//          defaultRenderer: charts.ArcRendererConfig(
-//            arcWidth: 30,
-//            arcRendererDecorators: [charts.ArcLabelDecorator()],
-//          ),
-//        );
-//
-//        isNaResultReady = true;
-//      });
-//    });
   }
 
   @override
