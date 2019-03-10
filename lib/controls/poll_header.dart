@@ -35,6 +35,9 @@ class PollHeader extends StatelessWidget {
               Icon(Icons.star, color: Theme.of(context).primaryColor),
             ],
           ),
+          Padding(
+            padding: EdgeInsets.only(top: 16.0),
+          ),
         ],
       ),
     );
