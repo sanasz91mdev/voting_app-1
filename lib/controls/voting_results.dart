@@ -37,16 +37,16 @@ class VotingResultState extends State<VotingResult> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).accentColor,
+      color: Colors.white,
       child: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+            padding: const EdgeInsets.only(top: 32.0, left: 16.0),
             child: Text(
               'NATIONAL ASSEMBLY',
               textAlign: TextAlign.start,
               style: TextStyle(
-                  color: Theme.of(context).backgroundColor,
+                  color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -108,12 +108,12 @@ class VotingResultState extends State<VotingResult> {
                 )),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0, left: 16.0),
+            padding: const EdgeInsets.only(top: 32.0, left: 16.0),
             child: Text(
               'PROVINCIAL ASSEMBLY',
               textAlign: TextAlign.start,
               style: TextStyle(
-                  color: Theme.of(context).backgroundColor,
+                  color: Theme.of(context).accentColor,
                   fontWeight: FontWeight.bold),
             ),
           ),

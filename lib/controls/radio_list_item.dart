@@ -42,7 +42,7 @@ class RadioListItem extends StatelessWidget {
           subtitle: Text(
             initials,
             style: TextStyle(
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).secondaryHeaderColor,
             ),
           ),
           trailing: CircleAvatar(

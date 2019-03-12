@@ -6,28 +6,16 @@ import 'package:voting_app/controls/poll_header.dart';
 import 'package:voting_app/controls/radio_list_item.dart';
 import 'package:voting_app/controls/voting_results.dart';
 import 'package:voting_app/models/firestore_helper.dart';
+import 'package:voting_app/theme.dart';
 
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
-  final Color _primaryColor = Color(0xFF00c853);
-  final Color _secondaryColor = Color(0xFF1b5e20);
-  final Color _secondaryTextColor = Colors.black;
-  final Color _accentColor = Colors.white;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Voting App',
-      theme: ThemeData(
-        secondaryHeaderColor: _secondaryTextColor,
-        backgroundColor: _secondaryColor,
-        primaryColor: _primaryColor,
-        accentColor: _accentColor,
-        buttonColor: _primaryColor,
-        unselectedWidgetColor: _accentColor,
-        dialogBackgroundColor: _secondaryColor,
-      ),
+      theme: voteAppTheme,
       home: MainPage(
         title: 'ELECTIONS 2019',
       ),
@@ -76,15 +64,16 @@ class _MainPageState extends State<MainPage> {
             Text(
               widget.title,
               style: TextStyle(
-                  color: Theme.of(context).accentColor,
+                  color: Theme.of(context).backgroundColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 24.0),
             ),
 
             // Election date label
             Text(
-              'SATURDAY, MARCH 16TH',
-              style: TextStyle(color: Theme.of(context).secondaryHeaderColor),
+              'SATURDAY, MARCH 16',
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
             ),
 
             // Time remaining label
@@ -93,8 +82,8 @@ class _MainPageState extends State<MainPage> {
               child: Text(
                 '${DateTime(2019, 03, 16).difference(DateTime.now()).inHours} Hours Away',
                 style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                ),
+                    color: Theme.of(context).backgroundColor,
+                    fontWeight: FontWeight.w500),
               ),
             ),
 
@@ -132,82 +121,89 @@ class _MainPageState extends State<MainPage> {
         children: [
           // Start of first page
           // // // // // // // //
-          Container(
-            color: Theme.of(context).backgroundColor,
-            child: Column(
-              children: <Widget>[
-                //Poll title
-                PollHeader(
-                  headerName: "NATIONAL ASSEMBLY",
+          Stack(children: [
+            Opacity(
+              opacity: 0.2,
+              child: Center(
+                child: Container(
+                  child: Image.asset('assets/vote5.png'),
                 ),
-
-                // List of poll options
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: Firestore.instance.collection('polls').snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) return LinearProgressIndicator();
-
-                      DocumentSnapshot nationalAssemblyPoll =
-                          snapshot.data.documents.first;
-                      var pollOptionsArray =
-                          nationalAssemblyPoll['pollOptions'];
-                      int index = 0;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: ListView(
-                          children: pollOptionsArray
-                              .map<Widget>((data) => buildListItem(
-                                  data,
-                                  index++,
-                                  _naRadioGroupValue,
-                                  _handleRadioValueChangeNA))
-                              .toList(),
-                        ),
-                      );
-                    },
+              ),
+            ),
+            Container(
+              color: Theme.of(context).backgroundColor,
+              child: Column(
+                children: <Widget>[
+                  //Poll title
+                  PollHeader(
+                    headerName: "NATIONAL ASSEMBLY",
                   ),
-                ),
 
-                // Submit button
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: RaisedButton(
-                    onPressed: _naVoteCasted
-                        ? null
-                        : () {
-                            if (_naRadioGroupValue == -1) {
-                              showAlertDialog(context, 'Unable to proceed',
-                                  'Please select a party to vote.');
-                            } else {
-                              setState(() {
-                                _naVoteCasted = true;
-                              });
-                              addNationalAssemblyVote(_naRadioGroupValue);
-                              showAlertDialog(context, 'Success',
-                                  'Your vote has been submitted successfully.');
-                            }
-                          },
-                    shape: Border.all(
-                      color: _naVoteCasted
-                          ? Theme.of(context).disabledColor
-                          : Theme.of(context).accentColor,
+                  // List of poll options
+                  Expanded(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream:
+                          Firestore.instance.collection('polls').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return LinearProgressIndicator();
+
+                        DocumentSnapshot nationalAssemblyPoll =
+                            snapshot.data.documents.first;
+                        var pollOptionsArray =
+                            nationalAssemblyPoll['pollOptions'];
+                        int index = 0;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: ListView(
+                            children: pollOptionsArray
+                                .map<Widget>((data) => buildListItem(
+                                    data,
+                                    index++,
+                                    _naRadioGroupValue,
+                                    _handleRadioValueChangeNA))
+                                .toList(),
+                          ),
+                        );
+                      },
                     ),
-                    color: Theme.of(context).backgroundColor,
-                    child: Text(
-                      'SUBMIT',
-                      style: TextStyle(
-                        color: _naVoteCasted
-                            ? Theme.of(context).disabledColor
-                            : Theme.of(context).accentColor,
+                  ),
+
+                  // Submit button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 16.0),
+                    child: RaisedButton(
+                      onPressed: _naVoteCasted
+                          ? null
+                          : () {
+                              if (_naRadioGroupValue == -1) {
+                                showAlertDialog(context, 'Unable to proceed',
+                                    'Please select a party to vote.');
+                              } else {
+                                setState(() {
+                                  _naVoteCasted = true;
+                                });
+                                addNationalAssemblyVote(_naRadioGroupValue);
+                                showAlertDialog(context, 'Success',
+                                    'Your vote has been submitted successfully.');
+                              }
+                            },
+                      color: Theme.of(context).primaryColor,
+                      child: Text(
+                        'SUBMIT',
+                        style: TextStyle(
+                          color: _paVoteCasted
+                              ? Theme.of(context).disabledColor
+                              : Theme.of(context).backgroundColor,
+                        ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
+          ]),
 
           // End of first page
           // // // // // // //
@@ -252,7 +248,8 @@ class _MainPageState extends State<MainPage> {
 
                 // Submit button
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 16.0),
                   child: RaisedButton(
                     onPressed: _paVoteCasted
                         ? null
@@ -261,7 +258,6 @@ class _MainPageState extends State<MainPage> {
                               showAlertDialog(context, 'Unable to proceed',
                                   'Please select a party to vote.');
                             } else {
-                              
                               setState(() {
                                 _paVoteCasted = true;
                               });
@@ -270,18 +266,13 @@ class _MainPageState extends State<MainPage> {
                                   'Your vote has been submitted successfully.');
                             }
                           },
-                    shape: Border.all(
-                      color: _paVoteCasted
-                          ? Theme.of(context).disabledColor
-                          : Theme.of(context).accentColor,
-                    ),
-                    color: Theme.of(context).backgroundColor,
+                    color: Theme.of(context).primaryColor,
                     child: Text(
                       'SUBMIT',
                       style: TextStyle(
                         color: _paVoteCasted
                             ? Theme.of(context).disabledColor
-                            : Theme.of(context).accentColor,
+                            : Theme.of(context).backgroundColor,
                       ),
                     ),
                   ),
@@ -364,12 +355,11 @@ class _MainPageState extends State<MainPage> {
           DrawerHeader(
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              CircleAvatarWithShadow(),
+             // SizedBox(height: 40.0, child: Image.asset('assets/vote5.png')),
             ]),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                    'https://www.federalretirees.ca/~/media/Images/Advocacy/ElectionBallot_553558978.jpg'),
+                image: AssetImage('assets/vote.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -377,8 +367,7 @@ class _MainPageState extends State<MainPage> {
           ListTile(
             title: Row(
               children: [
-                Icon(Icons.assessment,
-                    color: Theme.of(context).backgroundColor),
+                Icon(Icons.assessment, color: Theme.of(context).primaryColor),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text('Live Results'),
@@ -396,7 +385,7 @@ class _MainPageState extends State<MainPage> {
           ListTile(
             title: Row(
               children: [
-                Icon(Icons.settings, color: Theme.of(context).backgroundColor),
+                Icon(Icons.settings, color: Theme.of(context).primaryColor),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text('Settings'),
@@ -408,8 +397,7 @@ class _MainPageState extends State<MainPage> {
           ListTile(
             title: Row(
               children: [
-                Icon(Icons.help_outline,
-                    color: Theme.of(context).backgroundColor),
+                Icon(Icons.help_outline, color: Theme.of(context).primaryColor),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text('Help & Feedback'),
@@ -421,7 +409,7 @@ class _MainPageState extends State<MainPage> {
           ListTile(
             title: Row(
               children: [
-                Icon(Icons.info, color: Theme.of(context).backgroundColor),
+                Icon(Icons.info, color: Theme.of(context).primaryColor),
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text('About'),
