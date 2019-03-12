@@ -19,14 +19,6 @@ class VotingResultState extends State<VotingResult> {
   var series;
   var pieChart;
 
-  Future<List<dynamic>> getPollOptions() async {
-    DocumentSnapshot snapshot = await Firestore.instance
-        .collection('polls')
-        .document('NationalAssemblyPoll')
-        .get();
-    var polls = snapshot['pollOptions'];
-    return polls;
-  }
 
   @override
   void initState() {
@@ -42,7 +34,7 @@ class VotingResultState extends State<VotingResult> {
           Padding(
             padding: const EdgeInsets.only(top: 32.0, left: 16.0),
             child: Text(
-              'NATIONAL ASSEMBLY',
+              "NATIONAL ASSEMBLY",
               textAlign: TextAlign.start,
               style: TextStyle(
                   color: Theme.of(context).accentColor,
@@ -103,13 +95,12 @@ class VotingResultState extends State<VotingResult> {
                       return pieChart;
                     },
                   ),
-                  //isNaResultReady?pieChart:Center(child: CircularProgressIndicator(backgroundColor: Colors.green,),),
                 )),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 32.0, left: 16.0),
             child: Text(
-              'PROVINCIAL ASSEMBLY',
+              "PROVINCIAL ASSEMBLY",
               textAlign: TextAlign.start,
               style: TextStyle(
                   color: Theme.of(context).accentColor,
@@ -121,7 +112,7 @@ class VotingResultState extends State<VotingResult> {
             child: Card(
                 elevation: 4.0,
                 child: SizedBox(
-                  height: 194, //TODO: refactor provincial stream builder
+                  height: 194,
                   child: StreamBuilder<QuerySnapshot>(
                     stream: Firestore.instance.collection('polls').snapshots(),
                     builder: (context, snapshot) {
@@ -133,7 +124,6 @@ class VotingResultState extends State<VotingResult> {
                         );
                       DocumentSnapshot first = snapshot.data.documents.last;
                       var pollResults = first['pollOptionsBalochistan'][0];
-
                       provincialAssemblyPollResultList.add(
                           new ProvincialAssemblyPollResult(
                               'Balochistan',
@@ -141,9 +131,7 @@ class VotingResultState extends State<VotingResult> {
                               pollResults['initials'],
                               charts.Color.fromHex(
                                   code: pollResults['color'])));
-
                       var pollResultsKPK = first['pollOptionsKPK'][0];
-
                       provincialAssemblyPollResultList.add(
                           new ProvincialAssemblyPollResult(
                               'KPK',
@@ -151,9 +139,7 @@ class VotingResultState extends State<VotingResult> {
                               pollResultsKPK['initials'],
                               charts.Color.fromHex(
                                   code: pollResultsKPK['color'])));
-
                       var pollResultsPunjab = first['pollOptionsPunjab'][0];
-
                       provincialAssemblyPollResultList.add(
                           new ProvincialAssemblyPollResult(
                               'Punjab',
@@ -161,28 +147,23 @@ class VotingResultState extends State<VotingResult> {
                               pollResultsPunjab['initials'],
                               charts.Color.fromHex(
                                   code: pollResultsPunjab['color'])));
-
                       var pollResultsSindh = first['pollOptionsSindh'];
-
                       pollResultsSindh.forEach((element) =>
                           provinceHelperList.add(new ProvinceHelper(
                               "Sindh",
                               element['numberOfVotes'],
                               element['initials'],
                               charts.Color.fromHex(code: element['color']))));
-
                       provinceHelperList
                           .sort((a, b) => a.votes.compareTo(b.votes));
                       var sindhPartyWithMaxVotes =
                           provinceHelperList[provinceHelperList.length - 1];
-
                       provincialAssemblyPollResultList.add(
                           new ProvincialAssemblyPollResult(
                               "Sindh",
                               sindhPartyWithMaxVotes.votes,
                               sindhPartyWithMaxVotes.party,
                               sindhPartyWithMaxVotes.color));
-
                       var provincialSeries = [
                         charts.Series<ProvincialAssemblyPollResult, String>(
                           id: 'provincialChart',
@@ -198,7 +179,6 @@ class VotingResultState extends State<VotingResult> {
                                   winner.party,
                         ),
                       ];
-
                       var barChart = charts.BarChart(
                         provincialSeries,
                         animate: false,
@@ -206,7 +186,6 @@ class VotingResultState extends State<VotingResult> {
                         barRendererDecorator:
                             charts.BarLabelDecorator<String>(),
                       );
-
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: barChart,
