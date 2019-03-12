@@ -15,7 +15,6 @@ class VotingResultState extends State<VotingResult> {
   List<ProvincialAssemblyPollResult> provincialAssemblyPollResultList =
       new List<ProvincialAssemblyPollResult>();
   List<ProvinceHelper> provinceHelperList = new List<ProvinceHelper>();
-  bool isNaResultReady = false;
   var naDataElements;
   var series;
   var pieChart;
