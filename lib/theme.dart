@@ -9,7 +9,8 @@ final ThemeData voteAppTheme = _buildTheme();
 
 ThemeData _buildTheme() {
   final ThemeData base = ThemeData.light();
-  return base.copyWith(        secondaryHeaderColor: _secondaryTextColor,
+  return base.copyWith(
+    secondaryHeaderColor: _secondaryTextColor,
     backgroundColor: _secondaryColor,
     primaryColor: _primaryColor,
     accentColor: _accentColor,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_page_indicator/flutter_page_indicator.dart';
-import 'package:voting_app/controls/custom_circle_avatar.dart';
 import 'package:voting_app/controls/poll_header.dart';
 import 'package:voting_app/controls/radio_list_item.dart';
 import 'package:voting_app/controls/voting_results.dart';
