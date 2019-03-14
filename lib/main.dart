@@ -354,7 +354,7 @@ class _MainPageState extends State<MainPage> {
           DrawerHeader(
             child:
                 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-             // SizedBox(height: 40.0, child: Image.asset('assets/vote5.png')),
+              // SizedBox(height: 40.0, child: Image.asset('assets/vote5.png')),
             ]),
             decoration: BoxDecoration(
               image: DecorationImage(
