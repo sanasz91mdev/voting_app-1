@@ -30,3 +30,23 @@ void addProvincialAssemblyVote(int index) async{
     }
   });
 }
+
+class FirebaseResponse {
+  final String color;
+  final String flag;
+  final String fullName;
+  final String initials;
+  final int numberOfVoters;
+  final DocumentReference reference;
+
+  FirebaseResponse.fromMap(Map<dynamic, dynamic> map, {this.reference})
+      : assert(map['color'] != null),
+        assert(map['flag'] != null),
+        assert(map['fullName'] != null),
+        assert(map['initials'] != null),
+        color = map['color'],
+        flag = map['flag'],
+        fullName = map['fullName'],
+        initials = map['initials'],
+        numberOfVoters = map['numberOfVoters'];
+}

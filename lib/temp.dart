@@ -5,6 +5,7 @@ import 'package:voting_app/controls/poll_header.dart';
 import 'package:voting_app/controls/radio_list_item.dart';
 import 'package:voting_app/controls/voting_results.dart';
 import 'package:voting_app/models/firestore_helper.dart';
+import 'package:voting_app/models/helpers.dart';
 import 'package:voting_app/theme.dart';
 
 void main() => runApp(VotingApp());
@@ -287,48 +288,6 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       drawer: buildDrawer(),
-    );
-  }
-
-  void showAlertDialog(BuildContext context, String title, String message) {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: Border.all(
-            color: Theme.of(context).accentColor,
-          ),
-          //backgroundColor: Theme.of(context).backgroundColor,
-          title: Text(
-            title,
-            style: TextStyle(
-              color: Theme.of(context).accentColor,
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              message,
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
-              ),
-            ),
-          ),
-          actions: [
-            FlatButton(
-              child: Text(
-                'Ok',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 
