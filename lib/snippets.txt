@@ -1,6 +1,14 @@
 {
+	"varinit":
+	{
+		"prefix": "varInit",
+		"body": [
+			"List<NationalAssemblyPollsResult> nationalAssemblyResultList = new List<NationalAssemblyPollsResult>(); List<ProvincialAssemblyPollResult> provincialAssemblyPollResultList = new List<ProvincialAssemblyPollResult>(); List<ProvinceHelper> provinceHelperList = new List<ProvinceHelper>();"
+		],
+		"description": "chart variable initializations"
+	},
 	"pac": {
-		"prefix": "pac",
+		"prefix": "provinAssemblyChart",
 		"body": [
 			"StreamBuilder<QuerySnapshot>( stream: Firestore.instance.collection('polls').snapshots(), builder: (context, snapshot) { provincialAssemblyPollResultList = new List<ProvincialAssemblyPollResult>();",
 			"if (!snapshot.hasData) return LinearProgressIndicator( backgroundColor: Colors.orange, ); DocumentSnapshot first = snapshot.data.documents.last; var pollResults = first['pollOptionsBalochistan'][0];",
@@ -12,7 +20,7 @@
 		"description": "Provincial asembly chart"
 	},
 	"Chart Header" : {
-		"prefix": "ch",
+		"prefix": "chartHeader",
 		"body": 
 		[
 			"Padding( padding: const EdgeInsets.only(top: 32.0, left: 16.0), child: Text( ${ChartHeader}, textAlign: TextAlign.start, style: TextStyle( color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), ), ),"

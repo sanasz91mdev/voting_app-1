@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 void showAlertDialog(BuildContext context, String title, String message) {
   showDialog<void>(
@@ -40,4 +41,33 @@ void showAlertDialog(BuildContext context, String title, String message) {
       );
     },
   );
+}
+
+
+class NationalAssemblyPollsResult {
+  final String partyInitial;
+  final int numberOfVotes;
+  final charts.Color color;
+
+  NationalAssemblyPollsResult(
+      this.partyInitial, this.numberOfVotes, this.color);
+}
+
+class ProvincialAssemblyPollResult {
+  final String province;
+  final int votes;
+  final String party;
+  final charts.Color color;
+
+  ProvincialAssemblyPollResult(
+      this.province, this.votes, this.party, this.color);
+}
+
+class ProvinceHelper {
+  final String province;
+  final int votes;
+  final String party;
+  final charts.Color color;
+
+  ProvinceHelper(this.province, this.votes, this.party, this.color);
 }
