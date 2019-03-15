@@ -9,7 +9,7 @@ class RadioListItem extends StatelessWidget {
     @required this.onChanged,
     @required this.fullName,
     @required this.initials,
-    @required this.flag,
+    @required this.trailing,
   })  : _radioValue = radioValue,
         _index = index,
         super(key: key);
@@ -18,7 +18,7 @@ class RadioListItem extends StatelessWidget {
   final int _index;
   final String fullName;
   final String initials;
-  final String flag;
+  final String trailing;
   final RadioCallback onChanged;
 
   @override
@@ -46,7 +46,7 @@ class RadioListItem extends StatelessWidget {
             ),
           ),
           trailing: CircleAvatar(
-            backgroundImage: NetworkImage(flag),
+            backgroundImage: NetworkImage(trailing),
           ),
         ),
         Divider(

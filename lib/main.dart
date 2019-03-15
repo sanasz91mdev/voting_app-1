@@ -296,7 +296,7 @@ class _MainPageState extends State<MainPage> {
     final record = FirebaseResponse.fromMap(data);
 
     return RadioListItem(
-      flag: record?.flag,
+      trailing: record?.flag,
       fullName: record?.fullName,
       index: index,
       initials: record?.initials,
