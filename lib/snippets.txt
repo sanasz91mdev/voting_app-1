@@ -18,5 +18,35 @@
 			"Padding( padding: const EdgeInsets.only(top: 32.0, left: 16.0), child: Text( ${ChartHeader}, textAlign: TextAlign.start, style: TextStyle( color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), ), ),"
 		],
 		"description": "Creates submit button for National Assembly poll."
+	},
+	"Stream builder NA" : {
+		"prefix": "streamNA",
+		"body": 
+		[
+			"StreamBuilder<QuerySnapshot>( stream: Firestore.instance.collection('polls').snapshots(), builder: (context, snapshot) { if (!snapshot.hasData) return LinearProgressIndicator(); DocumentSnapshot nationalAssemblyPoll = snapshot.data.documents.first; var pollOptionsArray = nationalAssemblyPoll['pollOptions']; int index = 0; return ${listView}; }, ),"
+		],
+		"description": "Creates stream builder for National Assembly poll."
+	},
+	"Submit button" : {
+		"prefix": "submit",
+		"body": 
+		[
+			"Padding( padding: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 16.0), child: RaisedButton( onPressed: ${voteCasted} ? null : () { if (${radioGroupValue} == -1) { showAlertDialog(context, 'Unable to proceed', 'Please select a party to vote.'); } else { setState(() { ${voteCasted} = true; }); addNationalAssemblyVote(${radioGroupValue}); showAlertDialog(context, 'Success', 'Your vote has been submitted successfully.'); } }, color: Theme.of(context).primaryColor, child: Text( 'SUBMIT', style: TextStyle( color: ${voteCasted} ? Theme.of(context).disabledColor : Theme.of(context).backgroundColor, ), ), ), )"
+		],
+		"description": "Creates submit button."
+	},
+	"App bar" : {
+		"prefix": "appBar",
+		"body": 
+		[
+			"bottom: PreferredSize( preferredSize: Size.fromHeight(88.0), child: Column( children: [ ",
+				"// Application title",
+				"Text( widget.title, style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.bold, fontSize: 24.0), ), ",
+				"// Election date label",
+				"Text( 'SATURDAY, MARCH 16', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500), ), ",
+				"// Time remaining label",
+				"Padding( padding: const EdgeInsets.symmetric(vertical: 16.0), child: Text( '${DateTime(2019, 03, 16, 12).difference(DateTime.now()).inMinutes} Minutes Away', style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.w500), ), ),], ), ),"
+		],
+		"description": "Creates AppBar."
 	}
 }
