@@ -27,6 +27,14 @@
 		],
 		"description": "Creates submit button for National Assembly poll."
 	},
+	"drawer":{
+		"prefix":"drawerVoteApp",
+		"body": 
+		[
+			"return Drawer( child: ListView( padding: EdgeInsets.zero, children: [ DrawerHeader( child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [ SizedBox(height: 40.0, child: Image.asset('assets/vote5.png')), ]), decoration: BoxDecoration( image: DecorationImage( image: AssetImage('assets/vote.png'), fit: BoxFit.cover, ), ), ), ListTile( title: Row( children: [ Icon(Icons.assessment, color: Theme.of(context).primaryColor), Padding( padding: const EdgeInsets.only(left: 8.0), child: Text('Live Results'), ), ], ), onTap: () { Navigator.pop(context); controller.jumpToPage(2); }, ), Divider( color: Colors.grey, ), ListTile( title: Row( children: [ Icon(Icons.settings, color: Theme.of(context).primaryColor), Padding( padding: const EdgeInsets.only(left: 8.0), child: Text('Settings'), ), ], ), onTap: null, ), ListTile( title: Row( children: [ Icon(Icons.help_outline, color: Theme.of(context).primaryColor), Padding( padding: const EdgeInsets.only(left: 8.0), child: Text('Help & Feedback'), ), ], ), onTap: null, ), ListTile( title: Row( children: [ Icon(Icons.info, color: Theme.of(context).primaryColor), Padding( padding: const EdgeInsets.only(left: 8.0), child: Text('About'), ), ], ), onTap: null, ), ], ), );"
+		],
+		"description": "app drawer"
+	},
 	"Stream builder NA" : {
 		"prefix": "streamNA",
 		"body": 
