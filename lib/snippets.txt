@@ -27,6 +27,13 @@
 		],
 		"description": "Creates submit button for National Assembly poll."
 	},
+	"chartImports":{
+		"prefix": "chartImports",
+		"body": [
+			"import 'package:flutter/material.dart'; import 'package:charts_flutter/flutter.dart' as charts; import 'package:cloud_firestore/cloud_firestore.dart'; import '../models/helpers.dart';"
+		],
+		"description": "chart control imports"
+	},
 	"drawer":{
 		"prefix":"drawerVoteApp",
 		"body": 
