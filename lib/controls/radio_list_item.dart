@@ -7,8 +7,8 @@ class RadioListItem extends StatelessWidget {
     @required int radioValue,
     @required int index,
     @required this.onChanged,
-    @required this.fullName,
-    @required this.initials,
+    @required this.title,
+    @required this.subtitle,
     @required this.trailing,
   })  : _radioValue = radioValue,
         _index = index,
@@ -16,8 +16,8 @@ class RadioListItem extends StatelessWidget {
 
   final int _radioValue;
   final int _index;
-  final String fullName;
-  final String initials;
+  final String title;
+  final String subtitle;
   final String trailing;
   final RadioCallback onChanged;
 
@@ -33,14 +33,14 @@ class RadioListItem extends StatelessWidget {
             onChanged: onChanged,
           ),
           title: Text(
-            fullName,
+            title,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).accentColor,
             ),
           ),
           subtitle: Text(
-            initials,
+            subtitle,
             style: TextStyle(
               color: Theme.of(context).secondaryHeaderColor,
             ),
