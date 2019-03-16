@@ -8,6 +8,8 @@ import 'package:voting_app/models/firestore_helper.dart';
 import 'package:voting_app/models/helpers.dart';
 import 'package:voting_app/theme.dart';
 
+import 'controls/voting_results.dart';
+
 void main() => runApp(VotingApp());
 
 class VotingApp extends StatelessWidget {
