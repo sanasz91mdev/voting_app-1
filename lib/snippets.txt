@@ -1,6 +1,5 @@
 {
-	"varinit":
-	{
+	"varinit": {
 		"prefix": "varInit",
 		"body": [
 			"List<NationalAssemblyPollsResult> nationalAssemblyResultList = new List<NationalAssemblyPollsResult>(); List<ProvincialAssemblyPollResult> provincialAssemblyPollResultList = new List<ProvincialAssemblyPollResult>(); List<ProvinceHelper> provinceHelperList = new List<ProvinceHelper>();"
@@ -19,10 +18,9 @@
 		],
 		"description": "Provincial asembly chart"
 	},
-	"Chart Header" : {
+	"Chart Header": {
 		"prefix": "chartHeader",
-		"body": 
-		[
+		"body": [
 			"Padding( padding: const EdgeInsets.only(top: 32.0, left: 16.0), child: Text( ${ChartHeader}, textAlign: TextAlign.start, style: TextStyle( color: Theme.of(context).accentColor, fontWeight: FontWeight.bold), ), ),"
 		],
 		"description": "Creates submit button for National Assembly poll."
@@ -42,34 +40,78 @@
 		],
 		"description": "app drawer"
 	},
-	"Stream builder NA" : {
+	"Stream builder NA": {
 		"prefix": "streamNA",
-		"body": 
-		[
-			"StreamBuilder<QuerySnapshot>( stream: Firestore.instance.collection('polls').snapshots(), builder: (context, snapshot) { if (!snapshot.hasData) return LinearProgressIndicator(); DocumentSnapshot nationalAssemblyPoll = snapshot.data.documents.first; var pollOptionsArray = nationalAssemblyPoll['pollOptions']; int index = 0; return ${listView}; }, ),"
+		"body": [
+			"StreamBuilder<QuerySnapshot>( stream: Firestore.instance.collection('polls').snapshots(), builder: (context, snapshot) { if (!snapshot.hasData) return LinearProgressIndicator(); DocumentSnapshot nationalAssemblyPoll = snapshot.data.documents.first; var pollOptionsArray = nationalAssemblyPoll['pollOptions']; int index = 0; return ${listView}; }, )"
 		],
 		"description": "Creates stream builder for National Assembly poll."
 	},
-	"Submit button" : {
+	"Variables for NA": {
+		"prefix": "variablesNA",
+		"body": [
+			"int _naRadioGroupValue = -1;",
+			"bool _naVoteCasted = false;"
+		],
+		"description": "Creates variables for NA vote casting."
+	},
+	"Variables for PA": {
+		"prefix": "variablesPA",
+		"body": [
+			"int _paRadioGroupValue = -1;",
+			"bool _paVoteCasted = false;"
+		],
+		"description": "Creates variables for PA vote casting."
+	},
+	"PA vote method": {
+		"prefix": "voteMethodPA",
+		"body": [
+			"void _handleRadioValueChangePA(int value) { if (!_paVoteCasted) { setState(() { _paRadioGroupValue = value; }); } }",
+		],
+		"description": "Creates method for maintaing PA vote state."
+	},
+	"Submit button": {
 		"prefix": "submit",
-		"body": 
-		[
+		"body": [
 			"Padding( padding: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 16.0), child: RaisedButton( onPressed: ${voteCasted} ? null : () { if (${radioGroupValue} == -1) { showAlertDialog(context, 'Unable to proceed', 'Please select a party to vote.'); } else { setState(() { ${voteCasted} = true; }); addNationalAssemblyVote(${radioGroupValue}); showAlertDialog(context, 'Success', 'Your vote has been submitted successfully.'); } }, color: Theme.of(context).primaryColor, child: Text( 'SUBMIT', style: TextStyle( color: ${voteCasted} ? Theme.of(context).disabledColor : Theme.of(context).backgroundColor, ), ), ), )"
 		],
 		"description": "Creates submit button."
 	},
-	"App bar" : {
+	"App bar": {
 		"prefix": "appBar",
-		"body": 
-		[
+		"body": [
 			"bottom: PreferredSize( preferredSize: Size.fromHeight(88.0), child: Column( children: [ ",
-				"// Application title",
-				"Text( widget.title, style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.bold, fontSize: 24.0), ), ",
-				"// Election date label",
-				"Text( 'SATURDAY, MARCH 16', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500), ), ",
-				"// Time remaining label",
-				"Padding( padding: const EdgeInsets.symmetric(vertical: 16.0), child: Text( '${DateTime(2019, 03, 16, 12).difference(DateTime.now()).inMinutes} Minutes Away', style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.w500), ), ),], ), ),"
+			"// Application title",
+			"Text( widget.title, style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.bold, fontSize: 24.0), ), ",
+			"// Election date label",
+			"Text( 'SATURDAY, MARCH 16', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500), ), ",
+			"// Time remaining label",
+			"Padding( padding: const EdgeInsets.symmetric(vertical: 16.0), child: Text( '${DateTime(2019, 03, 16, 12).difference(DateTime.now()).inMinutes} Minutes Away', style: TextStyle( color: Theme.of(context).backgroundColor, fontWeight: FontWeight.w500), ), ),], ), ),"
 		],
 		"description": "Creates AppBar."
+	},
+	"Provincial assembly poll list": {
+		"prefix": "pollListPA",
+		"body": [
+			"// End of first page // // // // // // // ",
+			"Container( color: Theme.of(context).backgroundColor, child: Column( children: <Widget>[ //Poll title PollHeader( headerName: 'PROVINCIAL ASSEMBLY', ), ",
+			"// List of poll options",
+			"Expanded( child: StreamBuilder<QuerySnapshot>( stream: Firestore.instance.collection('polls').snapshots(), builder: (context, snapshot) { if (!snapshot.hasData) return LinearProgressIndicator(); DocumentSnapshot provincialAssemblyPoll = snapshot.data.documents.last; var pollOptionsArray = provincialAssemblyPoll['pollOptionsSindh']; int index = 0; return Padding( padding: const EdgeInsets.only(top: 8.0), child: ListView( children: pollOptionsArray .map<Widget>((data) => buildListItem( data, index++, _paRadioGroupValue, _handleRadioValueChangePA)) .toList(), ), ); }, ), ), ",
+			"// Submit button",
+			"Padding( padding: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 16.0), child: RaisedButton( onPressed: _paVoteCasted ? null : () { if (_paRadioGroupValue == -1) { showAlertDialog(context, 'Unable to proceed', 'Please select a party to vote.'); } else { setState(() { _paVoteCasted = true; }); addProvincialAssemblyVote(_paRadioGroupValue); showAlertDialog(context, 'Success', 'Your vote has been submitted successfully.'); } }, color: Theme.of(context).primaryColor, child: Text( 'SUBMIT', style: TextStyle( color: _paVoteCasted ? Theme.of(context).disabledColor : Theme.of(context).backgroundColor, ), ), ), ) ], ), ), ",
+			"// End of second page // // // // // // //"
+		],
+		"description": "Creates Poll List Page PA"
+	},
+	"PageIndicator parameters": {
+		"prefix": "pageIndicatorParams",
+		"body": [
+			"color: Theme.of(context).accentColor,",
+			"activeColor: Theme.of(context).backgroundColor,",
+			"size: 8.0,",
+			"controller: controller,",
+			"space: 4.0,",
+		],
+		"description": "Creates Poll List Page PA"
 	}
 }
