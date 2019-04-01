@@ -26,6 +26,7 @@ class VotingResultState extends State<VotingResult> {
       color: Colors.white,
       child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 32.0, left: 16.0),
